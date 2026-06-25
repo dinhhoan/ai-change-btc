@@ -196,6 +196,7 @@ def _broker_from_config(config: PaperConfig) -> PaperBroker:
         partial_take_profit_fraction=config.partial_take_profit_fraction,
         time_stop_ticks=config.time_stop_ticks,
         time_stop_min_r=config.time_stop_min_r,
+        min_decisive_trade_pnl=config.min_decisive_trade_pnl,
         loss_streak_limit=config.loss_streak_limit,
         loss_streak_cooldown_ticks=config.loss_streak_cooldown_ticks,
         loss_streak_position_scale=config.loss_streak_position_scale,

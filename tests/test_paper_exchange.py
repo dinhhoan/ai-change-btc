@@ -275,6 +275,33 @@ class PaperBrokerTest(unittest.TestCase):
         self.assertIsNone(blocked)
         self.assertEqual(broker.skipped_trades[-1]["reason"], "loss_streak_cooldown_active")
 
+    def test_tiny_time_stop_loss_counts_as_scratch(self) -> None:
+        broker = PaperBroker(
+            starting_cash=10_000,
+            risk_per_trade=0.05,
+            fee_bps=0,
+            slippage_bps=0,
+            min_confidence_to_trade=0.5,
+            max_abs_position_usd=1_000,
+            time_stop_ticks=1,
+            time_stop_min_r=0.10,
+            min_decisive_trade_pnl=1.0,
+            loss_streak_limit=1,
+            loss_streak_cooldown_ticks=10,
+        )
+
+        order = broker.rebalance_from_signal(
+            _signal(Direction.LONG, expected_price=104.0, lower_band=99.0, upper_band=101.0),
+            1,
+        )
+        self.assertIsNotNone(order)
+        tiny_exit = broker.mark("BTCUSDT", 99.96, 2)
+
+        self.assertIsNotNone(tiny_exit)
+        self.assertEqual(broker.performance_summary()["scratch_trades"], 1)
+        self.assertEqual(broker.performance_summary()["losing_trades"], 0)
+        self.assertEqual(broker.loss_streaks.get("BTCUSDT", 0), 0)
+
     def test_capital_guard_blocks_after_bad_session(self) -> None:
         broker = PaperBroker(
             starting_cash=10_000,

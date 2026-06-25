@@ -92,6 +92,7 @@ class LabRunner:
             partial_take_profit_fraction=config.paper.partial_take_profit_fraction,
             time_stop_ticks=config.paper.time_stop_ticks,
             time_stop_min_r=config.paper.time_stop_min_r,
+            min_decisive_trade_pnl=config.paper.min_decisive_trade_pnl,
             loss_streak_limit=config.paper.loss_streak_limit,
             loss_streak_cooldown_ticks=config.paper.loss_streak_cooldown_ticks,
             loss_streak_position_scale=config.paper.loss_streak_position_scale,
@@ -243,6 +244,13 @@ class LabRunner:
                 continue
             if len(blockers) > self.config.paper.scout_max_blockers:
                 continue
+            if any(
+                "AI gate chua cho" in blocker
+                or "taker buy/sell chua xac nhan" in blocker
+                or "pressure chua ro" in blocker
+                for blocker in blockers
+            ):
+                continue
             if any("RSI" in blocker or "hai phe" in blocker for blocker in blockers):
                 continue
             if not self._scout_ai_allows(base_signal, side):
@@ -300,7 +308,12 @@ class LabRunner:
             return False
         side_value = 1.0 if side == Direction.LONG else -1.0
         side_score = side_value * signal.score
-        if side_score < -0.06:
+        setup_readiness = float(signal.components.get("setup_readiness", 0.0) or 0.0)
+        if side_score < 0.0:
+            return False
+        if setup_readiness < 0.50:
+            return False
+        if side_score < 0.03 and signal.confidence < self.config.paper.scout_min_confidence_to_trade + 0.03:
             return False
         return signal.confidence >= self.config.paper.scout_min_confidence_to_trade
 

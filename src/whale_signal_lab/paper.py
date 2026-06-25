@@ -33,6 +33,7 @@ class PaperBroker:
     partial_take_profit_fraction: float = 0.50
     time_stop_ticks: int = 10
     time_stop_min_r: float = 0.10
+    min_decisive_trade_pnl: float = 1.0
     loss_streak_limit: int = 2
     loss_streak_cooldown_ticks: int = 24
     loss_streak_position_scale: float = 0.50
@@ -681,11 +682,12 @@ class PaperBroker:
         self.total_gas_fees += gas_fee
         if closed_quantity > 0:
             self.realized_pnl += realized_net
-            if realized_net > 1e-9:
+            decisive_threshold = max(0.0, self.min_decisive_trade_pnl)
+            if realized_net > decisive_threshold:
                 self.winning_trades += 1
                 self.gross_profit += realized_net
                 self.loss_streaks[symbol] = 0
-            elif realized_net < -1e-9:
+            elif realized_net < -decisive_threshold:
                 self.losing_trades += 1
                 self.gross_loss += realized_net
                 streak = self.loss_streaks.get(symbol, 0) + 1
