@@ -12,7 +12,7 @@ if [[ ! -d "$APP_DIR/src/whale_signal_lab" ]]; then
 fi
 
 sudo apt-get update
-sudo apt-get install -y python3 python3-venv python3-pip curl
+sudo apt-get install -y python3 python3-venv python3-pip curl git
 
 if ! id "$SERVICE_USER" >/dev/null 2>&1; then
   sudo useradd --system --home-dir "$APP_DIR" --shell /usr/sbin/nologin "$SERVICE_USER"
@@ -24,11 +24,13 @@ python3 -m venv "$APP_DIR/.venv"
 
 if [[ ! -f "$APP_DIR/.env" ]]; then
   cp "$APP_DIR/deploy/google-cloud.env.example" "$APP_DIR/.env"
-  chmod 600 "$APP_DIR/.env"
   echo "Created $APP_DIR/.env. Edit it before starting the service."
 fi
 
-sudo chown -R "$SERVICE_USER:$SERVICE_USER" "$APP_DIR"
+mkdir -p "$APP_DIR/data"
+sudo chown "$SERVICE_USER:$SERVICE_USER" "$APP_DIR/.env"
+sudo chmod 600 "$APP_DIR/.env"
+sudo chown -R "$SERVICE_USER:$SERVICE_USER" "$APP_DIR/data"
 sudo cp "$APP_DIR/deploy/crypto-whale-radar.service" "/etc/systemd/system/${SERVICE_NAME}.service"
 sudo systemctl daemon-reload
 

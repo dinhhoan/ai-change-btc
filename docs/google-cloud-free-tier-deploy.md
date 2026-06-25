@@ -14,29 +14,19 @@ Huong dan nay chay bot nhu mot `systemd` service tren VM Ubuntu. Mac dinh servic
    - Neu chi can Telegram alert, khong mo port `8765` ra internet.
    - Neu muon xem dashboard tu trinh duyet, tao firewall rule TCP `8765` va gioi han source IP ve IP nha ban.
 
-## 2. Upload source len VM
+## 2. Clone source tu GitHub len VM
 
-Tu may Mac, nen nen thu muc du an:
-
-```bash
-cd "/Users/hoantran/Tdhoan"
-tar --exclude='crypto-whale-radar/.venv' --exclude='crypto-whale-radar/__pycache__' --exclude='crypto-whale-radar/**/__pycache__' -czf /tmp/crypto-whale-radar.tar.gz crypto-whale-radar
-```
-
-Copy len VM. Thay `YOUR_VM_USER` bang username SSH cua VM va `VM_EXTERNAL_IP` bang IP VM:
+SSH vao VM tu nut `SSH` trong Google Cloud Console, sau do chay:
 
 ```bash
-scp /tmp/crypto-whale-radar.tar.gz YOUR_VM_USER@VM_EXTERNAL_IP:/tmp/
-```
-
-Tren VM:
-
-```bash
-sudo mkdir -p /opt
-cd /opt
-sudo tar -xzf /tmp/crypto-whale-radar.tar.gz
+sudo apt-get update
+sudo apt-get install -y git
+sudo mkdir -p /opt/crypto-whale-radar
 sudo chown -R "$USER:$USER" /opt/crypto-whale-radar
+git clone https://github.com/dinhhoan/ai-change-btc.git /opt/crypto-whale-radar
 ```
+
+Neu repo dang private, dung SSH URL va them SSH key cua VM vao GitHub Deploy keys.
 
 ## 3. Cai service
 
@@ -110,10 +100,8 @@ Cap nhat source moi:
 
 ```bash
 sudo systemctl stop crypto-whale-radar
-cd /opt
-sudo tar -xzf /tmp/crypto-whale-radar.tar.gz
-sudo chown -R "$USER:$USER" /opt/crypto-whale-radar
 cd /opt/crypto-whale-radar
+git pull
 ./deploy/install_google_cloud_vm.sh
 sudo systemctl restart crypto-whale-radar
 ```
