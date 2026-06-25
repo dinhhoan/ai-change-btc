@@ -14,23 +14,25 @@ Huong dan nay chay bot nhu mot `systemd` service tren VM Ubuntu. Mac dinh servic
    - Neu chi can Telegram alert, khong mo port `8765` ra internet.
    - Neu muon xem dashboard tu trinh duyet, tao firewall rule TCP `8765` va gioi han source IP ve IP nha ban.
 
-## 2. Clone source tu GitHub len VM
+## 2. Day toan bo project len VM
 
 SSH vao VM tu nut `SSH` trong Google Cloud Console, sau do chay:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y git
-sudo mkdir -p /opt/crypto-whale-radar
-sudo chown -R "$USER:$USER" /opt/crypto-whale-radar
-git clone https://github.com/dinhhoan/ai-change-btc.git /opt/crypto-whale-radar
+curl -fsSL https://raw.githubusercontent.com/dinhhoan/ai-change-btc/main/deploy/bootstrap_google_cloud_vm.sh | bash
 ```
 
-Neu repo dang private, dung SSH URL va them SSH key cua VM vao GitHub Deploy keys.
+Lenh nay tu clone repo GitHub vao `/opt/crypto-whale-radar`, cai Python, tao venv, cai package, tao file `.env`, va cai `systemd` service.
+
+Neu repo dang private, dung SSH URL va them SSH key cua VM vao GitHub Deploy keys:
+
+```bash
+REPO_URL=git@github.com:dinhhoan/ai-change-btc.git bash deploy/bootstrap_google_cloud_vm.sh
+```
 
 ## 3. Cai service
 
-Tren VM:
+Neu da chay bootstrap o buoc 2 thi bo qua buoc nay. Neu muon cai thu cong:
 
 ```bash
 cd /opt/crypto-whale-radar
@@ -100,8 +102,6 @@ Cap nhat source moi:
 
 ```bash
 sudo systemctl stop crypto-whale-radar
-cd /opt/crypto-whale-radar
-git pull
-./deploy/install_google_cloud_vm.sh
+curl -fsSL https://raw.githubusercontent.com/dinhhoan/ai-change-btc/main/deploy/bootstrap_google_cloud_vm.sh | bash
 sudo systemctl restart crypto-whale-radar
 ```
