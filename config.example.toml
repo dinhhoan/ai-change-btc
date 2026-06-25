@@ -1,0 +1,123 @@
+[app]
+mode = "demo"
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT"]
+poll_interval_sec = 10
+signal_horizon_sec = 900
+print_json = false
+
+[market]
+binance_base_url = "https://api.binance.com"
+binance_stream_url = "wss://stream.binance.com:9443/stream"
+use_websocket = false
+
+[derivatives]
+enabled = true
+binance_futures_base_url = "https://fapi.binance.com"
+period = "5m"
+poll_interval_sec = 300
+funding_poll_interval_sec = 300
+orderbook_depth_limit = 20
+
+[onchain]
+etherscan_base_url = "https://api.etherscan.io/v2/api"
+etherscan_api_key_env = "ETHERSCAN_API_KEY"
+chainid = "1"
+poll_interval_sec = 20
+min_transfer_usd = 1000000
+stablecoins = ["USDT", "USDC", "DAI", "FDUSD", "TUSD"]
+
+[smart_money]
+enabled = true
+# Module nay lay cum lenh 5 phut truc tiep tu Binance Futures public market data.
+chain = "binance-futures"
+chainid = "binance"
+etherscan_api_key_env = "ETHERSCAN_API_KEY"
+poll_interval_sec = 30
+wallet_limit = 10000
+demo_wallet_count = 10000
+cluster_window_sec = 330
+min_cluster_wallets = 10
+min_cluster_usd = 300000
+min_activity_usd = 15000
+cluster_bucket_sec = 15
+orderflow_window_sec = 300
+max_trades_per_symbol = 300
+max_pages = 2
+page_size = 500
+
+[paper]
+starting_cash = 10000
+risk_per_trade = 0.05
+fee_bps = 7.5
+slippage_bps = 2.0
+gas_fee_usd = 0
+min_edge_cost_multiple = 1.4
+min_confidence_to_trade = 0.58
+max_abs_position_usd = 1000
+risk_reward_ratio = 2.0
+min_forecast_rr = 0.72
+min_stop_loss_pct = 0.003
+entry_cooldown_ticks = 18
+min_holding_ticks = 4
+reversal_confidence = 0.62
+breakeven_trigger_r = 0.9
+breakeven_lock_r = 0.05
+trailing_trigger_r = 0.9
+trailing_distance_r = 0.85
+volatility_risk_penalty_threshold = 0.008
+volatility_block_penalty = 0.018
+high_volatility_position_scale = 0.50
+shock_position_scale = 0.35
+partial_take_profit_r = 0.55
+partial_take_profit_fraction = 0.50
+time_stop_ticks = 8
+time_stop_min_r = 0.10
+loss_streak_limit = 1
+loss_streak_cooldown_ticks = 96
+loss_streak_position_scale = 0.25
+max_session_drawdown_pct = 0.0015
+max_session_losses = 2
+min_session_win_rate = 0.40
+min_session_trades_for_guard = 2
+global_cooldown_ticks = 96
+scout_enabled = true
+scout_position_scale = 0.25
+scout_min_confidence_to_trade = 0.50
+scout_min_readiness = 0.70
+scout_min_priority = 0.58
+scout_min_confirmations = 3
+scout_max_blockers = 2
+scout_max_entries_per_tick = 1
+
+[telegram]
+enabled = false
+enabled_env = "TELEGRAM_ENABLED"
+bot_token_env = "TELEGRAM_BOT_TOKEN"
+chat_id_env = "TELEGRAM_CHAT_ID"
+api_ip_env = "TELEGRAM_API_IP"
+# Co the dung chat_id = "@ten_kenh_public" neu bot da la admin cua channel.
+chat_id = ""
+notify_entries = true
+notify_exits = false
+timeout_sec = 5
+
+[learner]
+enabled = true
+log_path = "data/decision_log.jsonl"
+state_path = "data/learner_state.json"
+outcome_horizon_ticks = 12
+min_abs_return = 0.0008
+learning_rate = 0.08
+quality_min_probability = 0.58
+quality_min_expectancy_r = 0.04
+quality_warmup_trades = 20
+
+[exchange_addresses]
+# Add labelled exchange wallets here after verifying labels from a trusted explorer.
+# In live smart-money mode, these are the seed addresses used to discover real high-frequency counterparties.
+# binance_hot_1 = "0x0000000000000000000000000000000000000000"
+
+[[wallets]]
+label = "sample_wallet_replace_me"
+address = "0x0000000000000000000000000000000000000000"
+notes = "Replace with a labelled whale wallet or exchange wallet."

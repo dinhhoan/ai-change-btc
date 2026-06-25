@@ -1,0 +1,19 @@
+[Unit]
+Description=Crypto Whale Radar paper trading dashboard
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=crypto-whale
+Group=crypto-whale
+WorkingDirectory=/opt/crypto-whale-radar
+EnvironmentFile=/opt/crypto-whale-radar/.env
+Environment=PYTHONPATH=/opt/crypto-whale-radar/src
+ExecStart=/opt/crypto-whale-radar/.venv/bin/python -m whale_signal_lab web --config /opt/crypto-whale-radar/config.example.toml --mode demo --host 0.0.0.0 --port 8765
+Restart=always
+RestartSec=8
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

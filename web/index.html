@@ -1,0 +1,3274 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setting</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15130f;
+      --muted: #6c6255;
+      --line: #15130f;
+      --paper: #f3ead2;
+      --panel: #fff8df;
+      --green: #008b6f;
+      --red: #d33f49;
+      --amber: #e09f1f;
+      --teal: #00798c;
+      --violet: #6f52ed;
+      --shadow: 5px 5px 0 #15130f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(21, 19, 15, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(21, 19, 15, 0.04) 1px, transparent 1px),
+        var(--paper);
+      background-size: 22px 22px;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 196px 1fr;
+    }
+
+    aside {
+      border-right: 2px solid var(--line);
+      background: #f7d86c;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 760;
+      font-size: 14px;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border: 2px solid var(--ink);
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: #fff;
+    }
+
+    .mark::before,
+    .mark::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: var(--teal);
+    }
+
+    .mark::before {
+      width: 18px;
+      height: 5px;
+      transform: rotate(-22deg);
+    }
+
+    .mark::after {
+      width: 7px;
+      height: 7px;
+      right: 7px;
+      top: 8px;
+      background: var(--amber);
+    }
+
+    .control-set {
+      display: grid;
+      gap: 10px;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn {
+      height: 40px;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 680;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .btn.primary {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .field input {
+      height: 32px;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      padding: 0 8px;
+      color: var(--ink);
+      background: #fff8df;
+    }
+
+    .status {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff8df;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric,
+    .panel {
+      background: var(--panel);
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .metric.open-positions {
+      grid-column: span 3;
+    }
+
+    .metric .label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .metric .value {
+      margin-top: 5px;
+      font-size: 22px;
+      font-weight: 780;
+      overflow-wrap: anywhere;
+    }
+
+    .metric .value.small {
+      font-size: 18px;
+    }
+
+    .open-position-list {
+      margin-top: 8px;
+      display: grid;
+      gap: 8px;
+      max-height: 132px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .open-position-row {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff2bd;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr) minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .open-position-row .signal {
+      min-width: 58px;
+      height: 22px;
+      font-size: 11px;
+    }
+
+    .open-position-main {
+      font-weight: 820;
+      overflow-wrap: anywhere;
+    }
+
+    .open-position-sub {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .trade-alert-stack {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 50;
+      width: min(420px, calc(100vw - 28px));
+      display: grid;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .trade-alert {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff8df;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      pointer-events: auto;
+      animation: alertIn 180ms ease-out;
+    }
+
+    .trade-alert.order {
+      background: #c7f0d8;
+    }
+
+    .trade-alert-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 820;
+      font-size: 14px;
+      min-width: 0;
+    }
+
+    .trade-alert-title {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .trade-alert-actions {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 8px;
+    }
+
+    .trade-alert-close {
+      width: 26px;
+      height: 26px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: #fff8df;
+      color: var(--ink);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      font-size: 16px;
+      font-weight: 820;
+      line-height: 1;
+    }
+
+    .trade-alert-close:hover {
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .trade-alert-detail {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    @keyframes alertIn {
+      from {
+        transform: translateY(-6px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .positive {
+      color: var(--green);
+    }
+
+    .negative {
+      color: var(--red);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .panel {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 760;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 680;
+      background: #f7d86c;
+      color: var(--ink);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .signal {
+      display: inline-flex;
+      align-items: center;
+      min-width: 64px;
+      justify-content: center;
+      height: 24px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .long {
+      color: #075c40;
+      background: #dff3e9;
+    }
+
+    .short {
+      color: #8e221d;
+      background: #f8dfdd;
+    }
+
+    .flat {
+      color: #6f4c13;
+      background: #f5ead2;
+    }
+
+    .scorebar {
+      height: 8px;
+      width: 94px;
+      background: #eadfbf;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .scorebar span {
+      display: block;
+      height: 100%;
+      width: 50%;
+      background: var(--teal);
+    }
+
+    .proposal-detail {
+      display: grid;
+      gap: 4px;
+      min-width: 220px;
+      max-width: 380px;
+      white-space: normal;
+    }
+
+    .proposal-level {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 760;
+    }
+
+    .strategy-board {
+      padding: 14px 16px 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .strategy-card {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff2bd;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .strategy-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 680;
+      text-transform: uppercase;
+    }
+
+    .strategy-value {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .strategy-detail {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      min-height: 34px;
+    }
+
+    .strategy-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .flow-step {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff8df;
+      padding: 10px;
+      min-width: 0;
+      display: grid;
+      gap: 5px;
+    }
+
+    .flow-step.active {
+      border-color: rgba(31, 118, 111, 0.45);
+      background: #c7f0d8;
+    }
+
+    .flow-kicker {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 740;
+      text-transform: uppercase;
+    }
+
+    .flow-title {
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .strategy-watch {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .watch-item {
+      display: grid;
+      gap: 4px;
+      border-left: 3px solid var(--teal);
+      padding-left: 10px;
+      min-width: 0;
+    }
+
+    .watch-item.wait {
+      border-left-color: var(--amber);
+    }
+
+    .watch-item.later {
+      border-left-color: var(--muted);
+    }
+
+    .watch-title {
+      font-weight: 780;
+      font-size: 13px;
+    }
+
+    .watch-copy {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .feed {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      max-height: 500px;
+      overflow: auto;
+    }
+
+    .event {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      padding: 10px;
+      display: grid;
+      gap: 5px;
+      background: #fff8df;
+      font-size: 13px;
+    }
+
+    .event-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 720;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--muted);
+      font-size: 12px;
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chart-shell {
+      padding: 14px 16px 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .market-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .chart-card {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff8df;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .chart-card-head {
+      padding: 12px 12px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .chart-symbol {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .chart-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .chart-card .chart-summary {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding: 10px 12px 0;
+    }
+
+    .chart-kpi {
+      min-width: 0;
+      display: grid;
+      gap: 5px;
+    }
+
+    .chart-kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chart-kpi .value {
+      font-size: 22px;
+      font-weight: 780;
+      overflow-wrap: anywhere;
+    }
+
+    .chart-kpi .value.small {
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .position-strip {
+      margin: 10px 12px 0;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff2bd;
+      display: grid;
+      grid-template-columns: minmax(150px, 0.8fr) repeat(3, minmax(0, 1fr));
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .position-strip.active {
+      background: #c7f0d8;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .position-strip.closed {
+      background: #f8dfdd;
+    }
+
+    .position-cell {
+      padding: 10px 12px;
+      border-right: 2px solid var(--line);
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .position-cell:last-child {
+      border-right: 0;
+    }
+
+    .position-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .position-value {
+      font-size: 13px;
+      font-weight: 820;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .chart-frame {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .chart-card .chart-frame {
+      border-top: 0;
+      padding: 10px 12px 12px;
+    }
+
+    .chart-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fffbe8;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+    }
+
+    .learner-note {
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--line);
+      background: #fff2bd;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .learner-note strong {
+      color: var(--ink);
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chart-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .mini-select {
+      height: 30px;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      background: #fff8df;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 760;
+      padding: 0 8px;
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-swatch {
+      width: 12px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--teal);
+    }
+
+    .legend-swatch.entry {
+      background: #64706b;
+    }
+
+    .legend-swatch.stop {
+      background: var(--red);
+    }
+
+    .legend-swatch.target {
+      background: var(--green);
+    }
+
+    .legend-swatch.order {
+      background: var(--amber);
+    }
+
+    @media (max-width: 980px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        border-right: 0;
+        border-bottom: 2px solid var(--line);
+      }
+
+      .metrics,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric.open-positions {
+        grid-column: auto;
+      }
+
+      .open-position-row {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .chart-card .chart-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .position-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .position-cell,
+      .position-cell:last-child {
+        border-right: 0;
+        border-bottom: 2px solid var(--line);
+      }
+
+      .position-cell:last-child {
+        border-bottom: 0;
+      }
+
+      .market-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .strategy-grid,
+      .strategy-flow,
+      .strategy-watch {
+        grid-template-columns: 1fr;
+      }
+
+      th,
+      td {
+        white-space: normal;
+      }
+    }
+
+    :root {
+      color-scheme: dark;
+      --ink: rgba(248, 250, 255, 0.96);
+      --muted: rgba(225, 232, 246, 0.66);
+      --line: rgba(255, 255, 255, 0.12);
+      --paper: #030406;
+      --panel: rgba(18, 20, 26, 0.44);
+      --panel-strong: rgba(32, 35, 44, 0.62);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --green: #30d158;
+      --red: #ff453a;
+      --amber: #ffd60a;
+      --teal: #0a84ff;
+      --violet: #9b8cff;
+      --shadow: 0 28px 70px rgba(0, 0, 0, 0.46), 0 8px 28px rgba(0, 0, 0, 0.28);
+      --inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(128deg, rgba(10, 132, 255, 0.16) 0%, rgba(10, 132, 255, 0) 36%),
+        linear-gradient(42deg, rgba(48, 209, 88, 0.12) 0%, rgba(48, 209, 88, 0) 34%),
+        linear-gradient(180deg, #020305 0%, #090a0f 46%, #030406 100%);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.042) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.07), transparent 28%, rgba(10, 132, 255, 0.06) 64%, transparent);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.12));
+    }
+
+    .shell {
+      position: relative;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 18px;
+      padding: 18px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .shell>*,
+    aside,
+    main {
+      min-width: 0;
+    }
+
+    aside,
+    .topbar,
+    .metric,
+    .panel,
+    .trade-alert {
+      position: relative;
+      border: 1px solid var(--glass-border);
+      background:
+        linear-gradient(145deg, rgba(50, 55, 68, 0.48), rgba(8, 10, 15, 0.32)),
+        rgba(20, 22, 28, 0.38);
+      box-shadow: var(--shadow), var(--inner-glow);
+      backdrop-filter: blur(34px) saturate(1.28);
+      -webkit-backdrop-filter: blur(34px) saturate(1.28);
+    }
+
+    aside::after,
+    .topbar::after,
+    .metric::after,
+    .panel::after,
+    .trade-alert::after {
+      content: "";
+      position: absolute;
+      inset: 1px 1px auto 1px;
+      height: 20%;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+      opacity: 0.72;
+    }
+
+    aside {
+      position: sticky;
+      top: 18px;
+      height: calc(100vh - 36px);
+      overflow: auto;
+      border-right: 1px solid var(--glass-border);
+      border-radius: 30px;
+      padding: 14px;
+      gap: 14px;
+      background:
+        linear-gradient(160deg, rgba(45, 49, 61, 0.54), rgba(8, 10, 14, 0.34)),
+        rgba(14, 16, 22, 0.42);
+    }
+
+    main {
+      padding: 0;
+      gap: 18px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 10px;
+      z-index: 20;
+      border-radius: 32px;
+      padding: 16px 18px;
+    }
+
+    h1 {
+      font-size: 30px;
+      font-weight: 820;
+    }
+
+    .subtle,
+    .muted,
+    .path,
+    .label,
+    .strategy-detail,
+    .watch-copy {
+      color: var(--muted);
+    }
+
+    .brand {
+      min-height: 48px;
+      padding: 4px 6px;
+      font-size: 15px;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(255, 255, 255, 0.76);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
+      box-shadow: 0 10px 24px rgba(10, 132, 255, 0.26), var(--inner-glow);
+    }
+
+    .control-set,
+    .status {
+      position: relative;
+      z-index: 1;
+    }
+
+    .control-set {
+      gap: 11px;
+    }
+
+    .button-row {
+      padding: 4px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+
+    .btn,
+    .mini-select,
+    .field input {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.09);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22), var(--inner-glow);
+      backdrop-filter: blur(18px) saturate(1.35);
+      -webkit-backdrop-filter: blur(18px) saturate(1.35);
+      color: var(--ink);
+    }
+
+    .btn {
+      height: 44px;
+      border-radius: 999px;
+      font-weight: 720;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .btn:hover,
+    .mini-select:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.13);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3), var(--inner-glow);
+    }
+
+    .btn.primary {
+      border-color: rgba(10, 132, 255, 0.52);
+      background: linear-gradient(145deg, rgba(10, 132, 255, 0.88), rgba(155, 140, 255, 0.64));
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.32);
+    }
+
+    .field {
+      gap: 7px;
+      color: rgba(238, 242, 255, 0.78);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .field input {
+      height: 38px;
+      border-radius: 16px;
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .field input:focus,
+    .mini-select:focus {
+      border-color: rgba(10, 132, 255, 0.64);
+      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2), var(--inner-glow);
+    }
+
+    .status {
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 12px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .status-row {
+      align-items: center;
+    }
+
+    .status-row strong {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ink);
+    }
+
+    .metrics {
+      grid-template-columns: repeat(6, minmax(148px, 1fr));
+      gap: 14px;
+    }
+
+    .metric,
+    .panel {
+      border-radius: 28px;
+      overflow: hidden;
+    }
+
+    .metric>*,
+    .panel>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric {
+      padding: 16px;
+      min-height: 122px;
+    }
+
+    .metric .label,
+    .chart-kpi .label,
+    .position-label {
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .metric .value {
+      margin-top: 8px;
+      font-size: clamp(21px, 1.45vw, 27px);
+      font-weight: 820;
+      line-height: 1.1;
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+
+    .metric .value.small {
+      font-size: 22px;
+    }
+
+    .positive {
+      color: var(--green);
+    }
+
+    .negative {
+      color: var(--red);
+    }
+
+    .panel-head {
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 15px 18px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 780;
+    }
+
+    .table {
+      position: relative;
+      z-index: 1;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 13px;
+      padding: 13px 16px;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(238, 242, 255, 0.72);
+      font-weight: 760;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .signal {
+      min-width: 68px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .long {
+      color: #77f0a0;
+      background: rgba(48, 209, 88, 0.16);
+    }
+
+    .short {
+      color: #ff9a92;
+      background: rgba(255, 69, 58, 0.16);
+    }
+
+    .flat {
+      color: #ffe18a;
+      background: rgba(255, 214, 10, 0.14);
+    }
+
+    .scorebar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
+    }
+
+    .scorebar span {
+      background: linear-gradient(90deg, #0a84ff, #00c7be);
+    }
+
+    .strategy-board,
+    .chart-shell {
+      position: relative;
+      z-index: 1;
+      padding: 16px 18px 18px;
+    }
+
+    .strategy-card,
+    .flow-step,
+    .event,
+    .chart-card,
+    .position-strip,
+    .open-position-row,
+    .learner-note {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(16px) saturate(1.25);
+      -webkit-backdrop-filter: blur(16px) saturate(1.25);
+    }
+
+    .strategy-card,
+    .flow-step,
+    .event,
+    .open-position-row {
+      border-radius: 20px;
+    }
+
+    .strategy-card {
+      padding: 14px;
+    }
+
+    .strategy-label,
+    .flow-kicker {
+      color: rgba(225, 232, 246, 0.64);
+      font-size: 11px;
+      letter-spacing: 0;
+    }
+
+    .strategy-value {
+      font-size: 19px;
+    }
+
+    .flow-step.active {
+      border-color: rgba(10, 132, 255, 0.34);
+      background: rgba(10, 132, 255, 0.16);
+    }
+
+    .watch-item {
+      border-left: 0;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feed {
+      position: relative;
+      z-index: 1;
+      padding: 16px;
+    }
+
+    .event-top {
+      align-items: center;
+    }
+
+    .chart-card {
+      border-radius: 26px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .chart-card-head {
+      padding: 14px 14px 0;
+    }
+
+    .chart-summary {
+      gap: 10px;
+    }
+
+    .chart-kpi .value {
+      font-size: 23px;
+      line-height: 1.1;
+    }
+
+    .position-strip {
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .position-strip.active {
+      background: rgba(48, 209, 88, 0.14);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13);
+    }
+
+    .position-strip.closed {
+      background: rgba(255, 69, 58, 0.12);
+    }
+
+    .position-cell {
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .chart-svg {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 22px;
+      background: rgba(2, 4, 8, 0.42);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .learner-note {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .mini-select {
+      height: 34px;
+      border-radius: 999px;
+      padding: 0 12px;
+      font-weight: 720;
+      outline: none;
+    }
+
+    .chart-controls {
+      gap: 9px;
+    }
+
+    .legend-swatch {
+      height: 4px;
+      background: #0a84ff;
+    }
+
+    .legend-swatch.entry {
+      background: #667085;
+    }
+
+    .legend-swatch.stop {
+      background: var(--red);
+    }
+
+    .legend-swatch.target {
+      background: var(--green);
+    }
+
+    .legend-swatch.order {
+      background: var(--amber);
+    }
+
+    .trade-alert-stack {
+      top: 18px;
+      right: 18px;
+    }
+
+    .trade-alert {
+      border-radius: 24px;
+      padding: 14px;
+    }
+
+    .trade-alert.order {
+      background:
+        linear-gradient(145deg, rgba(48, 209, 88, 0.2), rgba(8, 10, 15, 0.34)),
+        rgba(20, 22, 28, 0.38);
+    }
+
+    .trade-alert-close {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ink);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 16px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(14px) saturate(1.35);
+      -webkit-backdrop-filter: blur(14px) saturate(1.35);
+    }
+
+    .trade-alert-close:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    ::selection {
+      background: rgba(10, 132, 255, 0.22);
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+
+      aside,
+      .topbar,
+      .metric,
+      .panel,
+      .trade-alert,
+      .strategy-card,
+      .flow-step,
+      .event,
+      .chart-card,
+      .position-strip,
+      .open-position-row,
+      .learner-note {
+        background: rgba(20, 22, 28, 0.94);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 12px;
+        gap: 12px;
+      }
+
+      aside {
+        position: relative;
+        top: 0;
+        height: auto;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .topbar {
+        top: 12px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric {
+        min-height: 112px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        padding: 10px;
+      }
+
+      aside,
+      .topbar,
+      .metric,
+      .panel,
+      .trade-alert {
+        border-radius: 24px;
+      }
+
+      .metrics,
+      .chart-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .metric .value {
+        font-size: 24px;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <span>Setting</span>
+      </div>
+
+      <div class="control-set">
+        <button id="runBtn" class="btn primary" type="button" title="Chạy hoặc dừng demo">Chạy</button>
+        <div class="button-row">
+          <button id="stepBtn" class="btn" type="button" title="Chạy một nhịp">Một nhịp</button>
+          <button id="resetBtn" class="btn" type="button" title="Reset phiên paper">Làm mới</button>
+        </div>
+        <label class="field">
+          Chu kỳ tự chạy (ms)
+          <input id="intervalInput" type="number" min="500" step="100" value="1200">
+        </label>
+        <label class="field">
+          Vốn ban đầu (USDT)
+          <input id="startingCashInput" type="number" min="100" step="100" value="10000">
+        </label>
+        <label class="field">
+          Rủi ro mỗi lệnh (% vốn)
+          <input id="riskInput" type="number" min="1" max="100" step="1" value="5">
+        </label>
+        <label class="field">
+          Giới hạn mỗi lệnh (USDT)
+          <input id="maxPositionInput" type="number" min="1" step="100" value="1000">
+        </label>
+        <label class="field">
+          Phí sàn (bps)
+          <input id="feeBpsInput" type="number" min="0" max="100" step="0.1" value="7.5">
+        </label>
+        <label class="field">
+          Trượt giá (bps)
+          <input id="slippageBpsInput" type="number" min="0" max="100" step="0.1" value="2">
+        </label>
+        <label class="field">
+          Gas / chi phí mạng (USD)
+          <input id="gasFeeInput" type="number" min="0" step="0.1" value="0">
+        </label>
+        <label class="field">
+          Edge tối thiểu / chi phí
+          <input id="edgeMultipleInput" type="number" min="0" step="0.1" value="1.4">
+        </label>
+        <label class="field">
+          RR mục tiêu
+          <input id="rrInput" type="number" min="1" max="10" step="0.1" value="2">
+        </label>
+        <label class="field">
+          RR dự báo tối thiểu
+          <input id="minForecastRrInput" type="number" min="0.3" max="2" step="0.01" value="0.72">
+        </label>
+        <label class="field">
+          Ngưỡng siết volatility
+          <input id="volRiskThresholdInput" type="number" min="0" max="0.1" step="0.001" value="0.008">
+        </label>
+        <label class="field">
+          Ngưỡng chặn volatility
+          <input id="volBlockInput" type="number" min="0" max="0.2" step="0.001" value="0.018">
+        </label>
+        <label class="field">
+          Size khi biến động cao
+          <input id="highVolScaleInput" type="number" min="5" max="100" step="5" value="50">
+        </label>
+        <label class="field">
+          Size khi shock-risk
+          <input id="shockScaleInput" type="number" min="5" max="100" step="5" value="35">
+        </label>
+      </div>
+
+      <div class="status">
+        <div class="status-row"><span>Chế độ</span><strong id="modeLabel">demo</strong></div>
+        <div class="status-row"><span>Nhịp</span><strong id="tickLabel">0</strong></div>
+        <div class="status-row"><span>Trạng thái</span><strong id="statusLabel">đang chờ</strong></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div>
+          <h3>Supper AI by Hoan Tran</h2>
+            <div class="subtle">Dòng tiền cá mập, áp lực thị trường, lời/lỗ paper</div>
+        </div>
+        <div class="subtle" id="updatedLabel">Đang chờ</div>
+      </div>
+
+      <section class="metrics" aria-label="Chỉ số phiên chạy">
+        <div class="metric">
+          <div class="label">Tài sản hiện tại</div>
+          <div class="value" id="equityValue">$10,000</div>
+        </div>
+        <div class="metric">
+          <div class="label">Lãi/Lỗ ròng</div>
+          <div class="value" id="pnlValue">$0</div>
+        </div>
+        <div class="metric">
+          <div class="label">Tỷ suất</div>
+          <div class="value" id="pnlPctValue">0.00%</div>
+        </div>
+        <div class="metric">
+          <div class="label">Tỷ lệ thắng</div>
+          <div class="value" id="winRateValue">0.00%</div>
+        </div>
+        <div class="metric">
+          <div class="label">Thắng / Thua</div>
+          <div class="value" id="winLossValue">0 / 0</div>
+        </div>
+        <div class="metric">
+          <div class="label">Tổng lệnh đã khớp</div>
+          <div class="value" id="ordersValue">0</div>
+        </div>
+        <div class="metric open-positions">
+          <div class="label">Vị thế đang mở</div>
+          <div id="openPositionValue">Không có</div>
+        </div>
+        <div class="metric">
+          <div class="label">Tiền mặt</div>
+          <div class="value" id="cashValue">$10,000</div>
+        </div>
+        <div class="metric">
+          <div class="label">PnL đã chốt</div>
+          <div class="value small" id="realizedValue">$0</div>
+        </div>
+        <div class="metric">
+          <div class="label">PnL đang mở</div>
+          <div class="value small" id="unrealizedValue">$0</div>
+        </div>
+        <div class="metric">
+          <div class="label">Phí giao dịch</div>
+          <div class="value small" id="feesValue">$0</div>
+        </div>
+        <div class="metric">
+          <div class="label">Gas đã tính</div>
+          <div class="value small" id="gasValue">$0</div>
+        </div>
+        <div class="metric">
+          <div class="label">Dòng cá mập</div>
+          <div class="value" id="whaleValue">$0</div>
+        </div>
+        <div class="metric">
+          <div class="label">Ví smart money</div>
+          <div class="value" id="smartWalletsValue">0</div>
+        </div>
+        <div class="metric">
+          <div class="label">Đồng thuận cụm 5p</div>
+          <div class="value" id="smartSyncValue">0%</div>
+        </div>
+        <div class="metric">
+          <div class="label">Long/Short hiện tại</div>
+          <div class="value" id="longShortValue">1.00</div>
+        </div>
+        <div class="metric">
+          <div class="label">AI học tín hiệu</div>
+          <div class="value" id="learnerValue">0%</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Quant Bot Playbook</div>
+          <div class="subtle" id="botThesisStatus">Đang gom edge</div>
+        </div>
+        <div class="strategy-board">
+          <div class="strategy-grid" id="botThesisCards"></div>
+          <div class="strategy-flow" id="botThesisFlow"></div>
+          <div class="strategy-watch" aria-label="Hướng phát triển bot">
+            <div class="watch-item">
+              <div class="watch-title">Orderflow scalp</div>
+              <div class="watch-copy">Ưu tiên hiện tại: Binance tape 5 giây, cụm 5 phút, cost gate, SL/TP rõ.</div>
+            </div>
+            <div class="watch-item wait">
+              <div class="watch-title">Mispricing scanner</div>
+              <div class="watch-copy">Hướng Polymarket: săn odds lệch so với giá crypto/fair value, chỉ vào khi spread
+                và depth đủ.</div>
+            </div>
+            <div class="watch-item later">
+              <div class="watch-title">Narrative edge</div>
+              <div class="watch-copy">Giai đoạn sau: tin tức, X/OSINT, anomaly, nhưng phải có kiểm chứng để tránh nhiễu.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Bản đồ vào lệnh BTC / ETH / SOL</div>
+          <div class="chart-controls">
+            <select id="chartIntervalInput" class="mini-select" title="Chọn khung nến">
+              <option value="60000">Nến 1 phút</option>
+              <option value="300000" selected>Nến 5 phút</option>
+              <option value="900000">Nến 15 phút</option>
+            </select>
+            <select id="chartRangeInput" class="mini-select" title="Chọn vùng dữ liệu hiển thị">
+              <option value="900000">15 phút</option>
+              <option value="3600000">1 giờ</option>
+              <option value="14400000">4 giờ</option>
+              <option value="43200000">12 giờ</option>
+              <option value="86400000">24 giờ</option>
+              <option value="259200000" selected>3 ngày</option>
+            </select>
+            <div class="subtle" id="marketChartStatus">Đang chờ dữ liệu</div>
+          </div>
+        </div>
+        <div class="chart-shell">
+          <div class="market-grid" id="marketCharts"></div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-swatch"></span><span id="candleLegend">Nến 5
+                phút</span></span>
+            <span class="legend-item"><span class="legend-swatch entry"></span>Entry</span>
+            <span class="legend-item"><span class="legend-swatch stop"></span>SL</span>
+            <span class="legend-item"><span class="legend-swatch target"></span>TP</span>
+            <span class="legend-item"><span class="legend-swatch order"></span>Dấu lúc vào/thoát</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Xu hướng dòng lệnh Binance liên tục</div>
+          <div class="subtle" id="trendStatus">0 mẫu</div>
+        </div>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Cặp</th>
+                <th>Sóng</th>
+                <th>Sẵn sàng</th>
+                <th>Long / Short</th>
+                <th>Gia tốc</th>
+                <th>Xác nhận</th>
+                <th>Cách canh</th>
+              </tr>
+            </thead>
+            <tbody id="trendBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Đề xuất từ cụm đồng thuận cao</div>
+          <div class="subtle" id="proposalStatus">0 đề xuất</div>
+        </div>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Cặp</th>
+                <th>Đề xuất</th>
+                <th>Ưu tiên</th>
+                <th>Cụm trội</th>
+                <th>Điều kiện còn thiếu</th>
+                <th>Entry / SL / TP</th>
+              </tr>
+            </thead>
+            <tbody id="proposalBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Tín hiệu vào lệnh</div>
+            <div class="subtle">Khung dự đoán 15 phút</div>
+          </div>
+          <div style="overflow:auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Cặp</th>
+                  <th>Quyết định</th>
+                  <th>Giá</th>
+                  <th>Giá kỳ vọng</th>
+                  <th>Độ tin cậy</th>
+                  <th>Bộ lọc</th>
+                  <th>Cá mập</th>
+                  <th>Dòng lệnh</th>
+                </tr>
+              </thead>
+              <tbody id="signalsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Nhật ký sự kiện</div>
+            <div class="subtle" id="tapeCount">0 sự kiện</div>
+          </div>
+          <div class="feed" id="feed"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Cụm lệnh 5 phút từ Binance</div>
+          <div class="subtle" id="clusterCount">0 cụm</div>
+        </div>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Cụm</th>
+                <th>Cặp</th>
+                <th>Hướng</th>
+                <th>Nhịp lệnh</th>
+                <th>USD</th>
+                <th>Đồng thuận</th>
+                <th>Edge</th>
+              </tr>
+            </thead>
+            <tbody id="clustersBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Tỉ trọng số tự học</div>
+          <div class="subtle" id="learnerStatus">0 kết quả</div>
+        </div>
+        <div class="learner-note">
+          <div><strong>Edge học được</strong> cho biết thành phần đó gần đây giúp lệnh đi đúng hay sai sau thời gian
+            kiểm chứng.</div>
+          <div><strong>Trọng số đang dùng</strong> là mức AI đang ưu tiên thành phần đó khi tính điểm LONG/SHORT; trọng
+            số tăng khi edge dương và giảm khi edge âm.</div>
+        </div>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Tín hiệu</th>
+                <th>Dùng để làm gì</th>
+                <th>Edge học được</th>
+                <th>Trọng số đang dùng</th>
+              </tr>
+            </thead>
+            <tbody id="learnerBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Kiểm tra phí trước lệnh</div>
+          <div class="subtle" id="costStatus">0 kiểm tra</div>
+        </div>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Cặp</th>
+                <th>Hướng</th>
+                <th>Trạng thái</th>
+                <th>Notional</th>
+                <th>Fee + gas</th>
+                <th>Edge kỳ vọng</th>
+                <th>Tỷ lệ</th>
+              </tr>
+            </thead>
+            <tbody id="costBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="trade-alert-stack" id="tradeAlertStack" aria-live="polite" aria-atomic="false"></div>
+
+  <script>
+    const SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT"];
+    const CHART_INTERVAL_LABELS = {
+      60000: "Nến 1 phút",
+      300000: "Nến 5 phút",
+      900000: "Nến 15 phút"
+    };
+    const BINANCE_INTERVALS = {
+      60000: "1m",
+      300000: "5m",
+      900000: "15m"
+    };
+
+    const state = {
+      running: false,
+      timer: null,
+      busy: false,
+      feed: [],
+      chartIntervalMs: 300000,
+      chartRangeMs: 259200000,
+      rawSamples: Object.fromEntries(SYMBOLS.map((symbol) => [symbol, []])),
+      histories: Object.fromEntries(SYMBOLS.map((symbol) => [symbol, []])),
+      orderHistory: Object.fromEntries(SYMBOLS.map((symbol) => [symbol, []])),
+      tradeAlerts: [],
+      notifiedAlerts: new Set()
+    };
+
+    const els = {
+      runBtn: document.getElementById("runBtn"),
+      stepBtn: document.getElementById("stepBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      intervalInput: document.getElementById("intervalInput"),
+      startingCashInput: document.getElementById("startingCashInput"),
+      riskInput: document.getElementById("riskInput"),
+      maxPositionInput: document.getElementById("maxPositionInput"),
+      feeBpsInput: document.getElementById("feeBpsInput"),
+      slippageBpsInput: document.getElementById("slippageBpsInput"),
+      gasFeeInput: document.getElementById("gasFeeInput"),
+      edgeMultipleInput: document.getElementById("edgeMultipleInput"),
+      rrInput: document.getElementById("rrInput"),
+      minForecastRrInput: document.getElementById("minForecastRrInput"),
+      volRiskThresholdInput: document.getElementById("volRiskThresholdInput"),
+      volBlockInput: document.getElementById("volBlockInput"),
+      highVolScaleInput: document.getElementById("highVolScaleInput"),
+      shockScaleInput: document.getElementById("shockScaleInput"),
+      modeLabel: document.getElementById("modeLabel"),
+      tickLabel: document.getElementById("tickLabel"),
+      statusLabel: document.getElementById("statusLabel"),
+      updatedLabel: document.getElementById("updatedLabel"),
+      equityValue: document.getElementById("equityValue"),
+      cashValue: document.getElementById("cashValue"),
+      pnlValue: document.getElementById("pnlValue"),
+      pnlPctValue: document.getElementById("pnlPctValue"),
+      winRateValue: document.getElementById("winRateValue"),
+      winLossValue: document.getElementById("winLossValue"),
+      realizedValue: document.getElementById("realizedValue"),
+      unrealizedValue: document.getElementById("unrealizedValue"),
+      feesValue: document.getElementById("feesValue"),
+      gasValue: document.getElementById("gasValue"),
+      ordersValue: document.getElementById("ordersValue"),
+      openPositionValue: document.getElementById("openPositionValue"),
+      whaleValue: document.getElementById("whaleValue"),
+      smartWalletsValue: document.getElementById("smartWalletsValue"),
+      smartSyncValue: document.getElementById("smartSyncValue"),
+      longShortValue: document.getElementById("longShortValue"),
+      learnerValue: document.getElementById("learnerValue"),
+      chartIntervalInput: document.getElementById("chartIntervalInput"),
+      chartRangeInput: document.getElementById("chartRangeInput"),
+      candleLegend: document.getElementById("candleLegend"),
+      tradeAlertStack: document.getElementById("tradeAlertStack"),
+      botThesisCards: document.getElementById("botThesisCards"),
+      botThesisFlow: document.getElementById("botThesisFlow"),
+      botThesisStatus: document.getElementById("botThesisStatus"),
+      marketCharts: document.getElementById("marketCharts"),
+      marketChartStatus: document.getElementById("marketChartStatus"),
+      trendBody: document.getElementById("trendBody"),
+      trendStatus: document.getElementById("trendStatus"),
+      proposalBody: document.getElementById("proposalBody"),
+      proposalStatus: document.getElementById("proposalStatus"),
+      signalsBody: document.getElementById("signalsBody"),
+      clustersBody: document.getElementById("clustersBody"),
+      clusterCount: document.getElementById("clusterCount"),
+      learnerBody: document.getElementById("learnerBody"),
+      learnerStatus: document.getElementById("learnerStatus"),
+      costBody: document.getElementById("costBody"),
+      costStatus: document.getElementById("costStatus"),
+      feed: document.getElementById("feed"),
+      tapeCount: document.getElementById("tapeCount")
+    };
+
+    const money = (value, digits = 0) => new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: digits
+    }).format(Number(value || 0));
+
+    const number = (value, digits = 4) => new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: digits
+    }).format(Number(value || 0));
+
+    const percent = (value, digits = 2) => `${number(Number(value || 0) * 100, digits)}%`;
+
+    const signedPercent = (value, digits = 2) => `${Number(value || 0) >= 0 ? "+" : ""}${number(value, digits)}%`;
+
+    const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
+
+    function setStatus(text) {
+      const labels = {
+        idle: "đang chờ",
+        running: "đang chạy",
+        error: "lỗi",
+        reset: "đang làm mới"
+      };
+      els.statusLabel.textContent = labels[text] || text;
+    }
+
+    function directionClass(direction) {
+      if (direction === "LONG") return "long";
+      if (direction === "SHORT") return "short";
+      return "flat";
+    }
+
+    function scoreWidth(confidence) {
+      return `${Math.max(5, Math.min(100, Number(confidence || 0) * 100))}%`;
+    }
+
+    async function tick() {
+      if (state.busy) return;
+      state.busy = true;
+      els.stepBtn.disabled = true;
+      setStatus("running");
+      try {
+        const response = await fetch("/api/tick");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        render(payload);
+      } catch (error) {
+        setStatus("error");
+        pushFeed({
+          type: "error",
+          title: "Mat ket noi API",
+          detail: error.message || "Khong goi duoc /api/tick",
+          amount: ""
+        });
+        renderFeed();
+      } finally {
+        state.busy = false;
+        els.stepBtn.disabled = false;
+        if (!state.running) setStatus("idle");
+      }
+    }
+
+    async function reset() {
+      stop();
+      setStatus("reset");
+      const response = await fetch("/api/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paper: readPaperSettings() })
+      });
+      const payload = await response.json();
+      state.feed = [];
+      state.rawSamples = Object.fromEntries(SYMBOLS.map((symbol) => [symbol, []]));
+      state.histories = Object.fromEntries(SYMBOLS.map((symbol) => [symbol, []]));
+      state.orderHistory = Object.fromEntries(SYMBOLS.map((symbol) => [symbol, []]));
+      state.tradeAlerts = [];
+      state.notifiedAlerts = new Set();
+      renderState(payload);
+      els.signalsBody.innerHTML = "";
+      els.trendBody.innerHTML = "";
+      els.proposalBody.innerHTML = "";
+      renderBotThesis(payload);
+      els.clustersBody.innerHTML = "";
+      els.learnerBody.innerHTML = "";
+      els.costBody.innerHTML = "";
+      await loadHistoricalCandles();
+      renderMarketCharts(payload);
+      renderFeed();
+      renderTradeAlerts();
+      setStatus("idle");
+    }
+
+    function readPaperSettings() {
+      return {
+        starting_cash: Number(els.startingCashInput.value || 10000),
+        risk_per_trade: Number(els.riskInput.value || 5) / 100,
+        max_abs_position_usd: Number(els.maxPositionInput.value || 5000),
+        fee_bps: Number(els.feeBpsInput.value || 0),
+        slippage_bps: Number(els.slippageBpsInput.value || 0),
+        gas_fee_usd: Number(els.gasFeeInput.value || 0),
+        min_edge_cost_multiple: Number(els.edgeMultipleInput.value || 0),
+        risk_reward_ratio: Number(els.rrInput.value || 2),
+        min_forecast_rr: Number(els.minForecastRrInput.value || 0.72),
+        volatility_risk_penalty_threshold: Number(els.volRiskThresholdInput.value || 0.008),
+        volatility_block_penalty: Number(els.volBlockInput.value || 0.018),
+        high_volatility_position_scale: Number(els.highVolScaleInput.value || 50) / 100,
+        shock_position_scale: Number(els.shockScaleInput.value || 35) / 100
+      };
+    }
+
+    function syncPaperSettings(settings = {}) {
+      if (!settings.starting_cash) return;
+      els.startingCashInput.value = Number(settings.starting_cash || 10000);
+      els.riskInput.value = number(Number(settings.risk_per_trade || 0) * 100, 2);
+      els.maxPositionInput.value = Number(settings.max_abs_position_usd || 5000);
+      els.feeBpsInput.value = Number(settings.fee_bps || 0);
+      els.slippageBpsInput.value = Number(settings.slippage_bps || 0);
+      els.gasFeeInput.value = Number(settings.gas_fee_usd || 0);
+      els.edgeMultipleInput.value = Number(settings.min_edge_cost_multiple || 0);
+      els.rrInput.value = Number(settings.risk_reward_ratio || 2);
+      els.minForecastRrInput.value = Number(settings.min_forecast_rr || 0.72);
+      els.volRiskThresholdInput.value = Number(settings.volatility_risk_penalty_threshold || 0.008);
+      els.volBlockInput.value = Number(settings.volatility_block_penalty || 0.018);
+      els.highVolScaleInput.value = number(Number(settings.high_volatility_position_scale || 0.5) * 100, 0);
+      els.shockScaleInput.value = number(Number(settings.shock_position_scale || 0.35) * 100, 0);
+    }
+
+    function run() {
+      if (state.running) {
+        stop();
+        return;
+      }
+      state.running = true;
+      els.runBtn.textContent = "Tạm dừng";
+      setStatus("running");
+      tick();
+      const delay = Math.max(500, Number(els.intervalInput.value || 1200));
+      state.timer = window.setInterval(tick, delay);
+    }
+
+    function stop() {
+      state.running = false;
+      els.runBtn.textContent = "Chạy";
+      window.clearInterval(state.timer);
+      state.timer = null;
+      setStatus("idle");
+    }
+
+    function renderState(payload) {
+      els.modeLabel.textContent = payload.mode || "demo";
+      els.tickLabel.textContent = payload.tick || 0;
+      const perf = payload.performance || {};
+      const baseline = Number(perf.starting_cash ?? 10000);
+      const equity = Number(perf.equity ?? payload.equity ?? baseline);
+      const netPnl = Number(perf.net_pnl ?? (equity - baseline));
+      const netPnlPct = Number(perf.net_pnl_pct ?? (baseline ? (netPnl / baseline * 100) : 0));
+      const realized = Number(perf.realized_pnl || 0);
+      const unrealized = Number(perf.unrealized_pnl || 0);
+      syncPaperSettings(payload.paper_settings || {});
+      els.equityValue.textContent = money(equity, 2);
+      els.cashValue.textContent = money(perf.cash ?? payload.cash, 2);
+      els.pnlValue.textContent = `${netPnl >= 0 ? "+" : ""}${money(netPnl, 2)}`;
+      els.pnlPctValue.textContent = signedPercent(netPnlPct, 2);
+      els.winRateValue.textContent = percent(perf.win_rate || 0, 2);
+      els.winLossValue.textContent = `${perf.winning_trades || 0} / ${perf.losing_trades || 0}`;
+      els.realizedValue.textContent = `${realized >= 0 ? "+" : ""}${money(realized, 2)}`;
+      els.unrealizedValue.textContent = `${unrealized >= 0 ? "+" : ""}${money(unrealized, 2)}`;
+      els.feesValue.textContent = money(perf.total_fees || 0, 2);
+      els.gasValue.textContent = money(perf.total_gas_fees || 0, 2);
+      paintValue(els.pnlValue, netPnl);
+      paintValue(els.pnlPctValue, netPnlPct);
+      paintValue(els.realizedValue, realized);
+      paintValue(els.unrealizedValue, unrealized);
+      els.ordersValue.textContent = payload.order_count || 0;
+      els.openPositionValue.innerHTML = renderOpenPositions(payload.positions || {}, payload.trade_plans || {});
+      const smartSummary = payload.smart_money_summary || {};
+      const entityLabel = smartSummary.entity_label === "nhip_lenh" ? "nhịp" : "ví";
+      els.smartWalletsValue.textContent = `${smartSummary.active_entities || smartSummary.active_wallets || 0} / ${smartSummary.tracked_entities || smartSummary.tracked_wallets || 0} ${entityLabel}`;
+      const clusters = payload.smart_money_clusters || [];
+      const maxSync = clusters.reduce((best, cluster) => Math.max(best, Number(cluster.sync_score || 0)), 0);
+      els.smartSyncValue.textContent = percent(maxSync, 1);
+      const signals = payload.signals || [];
+      const strongestLs = signals.reduce((best, signal) => {
+        const ratio = Number(signal.components?.top_long_short_ratio || signal.components?.global_long_short_ratio || 1);
+        return Math.abs(ratio - 1) > Math.abs(best - 1) ? ratio : best;
+      }, 1);
+      els.longShortValue.textContent = number(strongestLs, 2);
+      const learner = payload.learner_summary || {};
+      els.learnerValue.textContent = percent(learner.win_rate || 0, 1);
+      els.updatedLabel.textContent = new Date().toLocaleTimeString();
+    }
+
+    function paintValue(element, value) {
+      element.classList.toggle("positive", Number(value) > 0);
+      element.classList.toggle("negative", Number(value) < 0);
+    }
+
+    function render(payload) {
+      window.__lastPayload = payload;
+      renderState(payload);
+      renderBotThesis(payload);
+      renderMarketCharts(payload);
+      renderOrderflowTrends(payload.orderflow_trends || []);
+      renderClusterProposals(payload.cluster_proposals || []);
+      renderSignals(payload.signals || []);
+      renderClusters(payload.smart_money_clusters || []);
+      renderLearner(payload.learner_summary || {});
+      renderCostReviews(payload.trade_reviews || [], payload.skipped_trades || []);
+      renderEvents(payload);
+      renderWarnings(payload.data_warnings || []);
+    }
+
+    function setDirectionBadge(element, direction) {
+      element.className = `signal ${directionClass(direction)}`;
+      element.textContent = direction || "FLAT";
+    }
+
+    function updateSymbolHistory(payload, symbol) {
+      const marketTick = (payload.market_ticks || []).find((tick) => tick.symbol === symbol);
+      const signal = (payload.signals || []).find((item) => item.symbol === symbol);
+      const price = Number(marketTick?.price ?? signal?.price ?? 0);
+      if (!Number.isFinite(price) || price <= 0) return;
+      const sampleTime = Date.now();
+      const samples = state.rawSamples[symbol] || [];
+      samples.push({
+        open: price,
+        high: price,
+        low: price,
+        close: price,
+        price,
+        timeMs: sampleTime
+      });
+      state.rawSamples[symbol] = samples
+        .filter((sample) => sampleTime - Number(sample.timeMs || 0) <= Math.max(state.chartRangeMs * 1.4, 3 * 24 * 60 * 60 * 1000))
+        .slice(-10000);
+      rebuildSymbolHistory(symbol);
+    }
+
+    function candleLabel(timeMs) {
+      return new Date(timeMs).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    }
+
+    function aggregateCandles(samples, intervalMs, rangeMs) {
+      const now = Date.now();
+      const cutoff = now - Math.max(intervalMs, rangeMs);
+      const buckets = new Map();
+      for (const sample of samples || []) {
+        const timeMs = Number(sample.timeMs || 0);
+        if (!Number.isFinite(timeMs) || timeMs < cutoff) continue;
+        const bucket = Math.floor(timeMs / intervalMs) * intervalMs;
+        const open = Number(sample.open || sample.price || sample.close || 0);
+        const high = Number(sample.high || sample.price || sample.close || open);
+        const low = Number(sample.low || sample.price || sample.close || open);
+        const close = Number(sample.close || sample.price || open);
+        if (!Number.isFinite(open) || open <= 0) continue;
+        const existing = buckets.get(bucket);
+        if (!existing) {
+          buckets.set(bucket, {
+            bucket,
+            open,
+            high,
+            low,
+            close,
+            price: close,
+            timeMs,
+            label: candleLabel(timeMs)
+          });
+        } else {
+          existing.high = Math.max(existing.high, high);
+          existing.low = Math.min(existing.low, low);
+          existing.close = close;
+          existing.price = close;
+          existing.timeMs = timeMs;
+          existing.label = candleLabel(timeMs);
+        }
+      }
+      return [...buckets.values()].sort((a, b) => a.bucket - b.bucket).slice(-1000);
+    }
+
+    function rebuildSymbolHistory(symbol) {
+      state.histories[symbol] = aggregateCandles(
+        state.rawSamples[symbol] || [],
+        state.chartIntervalMs,
+        state.chartRangeMs
+      );
+    }
+
+    function rebuildAllHistories() {
+      for (const symbol of SYMBOLS) rebuildSymbolHistory(symbol);
+    }
+
+    function updateOrderMarkers(payload) {
+      for (const order of [...(payload.recent_orders || []), ...(payload.orders || [])]) {
+        if (!SYMBOLS.includes(order.symbol)) continue;
+        const markers = state.orderHistory[order.symbol] || [];
+        const orderTime = Date.parse(order.timestamp || "") || Date.now();
+        const duplicate = markers.some((marker) =>
+          marker.side === order.side &&
+          Math.abs(Number(marker.price) - Number(order.fill_price || 0)) < 0.0000001 &&
+          Math.abs(Number(marker.notional) - Number(order.notional || 0)) < 0.01 &&
+          Math.abs(Number(marker.timeMs) - orderTime) < 2000
+        );
+        if (duplicate) continue;
+        markers.push({
+          symbol: order.symbol,
+          side: order.side,
+          price: Number(order.fill_price || 0),
+          notional: Number(order.notional || 0),
+          quantity: Number(order.quantity || 0),
+          tick: payload.tick || 0,
+          timeMs: orderTime,
+          timestamp: order.timestamp,
+          label: new Date(orderTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+        });
+        state.orderHistory[order.symbol] = markers.sort((a, b) => a.timeMs - b.timeMs).slice(-80);
+      }
+    }
+
+    async function loadHistoricalCandles() {
+      const interval = BINANCE_INTERVALS[state.chartIntervalMs] || "5m";
+      const desiredCandles = Math.ceil(state.chartRangeMs / state.chartIntervalMs) + 24;
+      const limit = Math.max(120, Math.min(1000, desiredCandles));
+      els.marketChartStatus.textContent = `Đang tải lịch sử ${CHART_INTERVAL_LABELS[state.chartIntervalMs] || "nến"}...`;
+      try {
+        const response = await fetch(`/api/klines?interval=${encodeURIComponent(interval)}&limit=${limit}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        for (const symbol of SYMBOLS) {
+          const candles = payload.candles?.[symbol] || [];
+          const liveSamples = (state.rawSamples[symbol] || []).filter((sample) => !sample.historical);
+          const historical = candles.map((candle) => ({
+            historical: true,
+            open: Number(candle.open || 0),
+            high: Number(candle.high || 0),
+            low: Number(candle.low || 0),
+            close: Number(candle.close || 0),
+            price: Number(candle.close || 0),
+            timeMs: Number(candle.close_time_ms || candle.open_time_ms || 0)
+          })).filter((sample) => sample.timeMs > 0 && sample.close > 0);
+          state.rawSamples[symbol] = [...historical, ...liveSamples]
+            .sort((a, b) => Number(a.timeMs || 0) - Number(b.timeMs || 0))
+            .slice(-10000);
+        }
+        rebuildAllHistories();
+        updateChartStatus();
+      } catch (error) {
+        updateChartStatus(`Không tải được lịch sử Binance: ${error.message || error}`);
+      }
+    }
+
+    function updateChartStatus(extra = "") {
+      const maxCandles = SYMBOLS.reduce((best, symbol) => Math.max(best, (state.histories[symbol] || []).length), 0);
+      const label = CHART_INTERVAL_LABELS[state.chartIntervalMs] || "Nến";
+      els.candleLegend.textContent = label;
+      els.marketChartStatus.textContent = extra || `${label} | ${maxCandles} nến | vùng ${chartRangeLabel(state.chartRangeMs)}`;
+    }
+
+    function chartRangeLabel(value) {
+      if (Number(value) >= 3600000) return `${number(Number(value) / 3600000, Number(value) % 3600000 ? 1 : 0)} giờ`;
+      return `${number(Number(value) / 60000, 0)} phút`;
+    }
+
+    function describePlan(plan) {
+      if (!plan) return "Chưa có vị thế";
+      return `${plan.side} | vào ${money(plan.entry_price, 2)} | SL ${money(plan.stop_price, 2)} | TP ${money(plan.take_profit_price, 2)}`;
+    }
+
+    function positionSide(position) {
+      const quantity = Number(position?.quantity || 0);
+      if (quantity > 0) return "LONG";
+      if (quantity < 0) return "SHORT";
+      return "FLAT";
+    }
+
+    function describePosition(symbol, position) {
+      const side = positionSide(position);
+      if (side === "FLAT") return "";
+      const quantity = Math.abs(Number(position.quantity || 0));
+      return `${symbol} ${side} ${number(quantity, 4)} @ ${money(position.avg_price, Number(position.avg_price || 0) > 100 ? 2 : 4)}`;
+    }
+
+    function describeOpenPositions(positions) {
+      const active = Object.entries(positions || {})
+        .map(([symbol, position]) => describePosition(symbol, position))
+        .filter(Boolean);
+      return active.length ? active.join(" | ") : "Không có";
+    }
+
+    function renderOpenPositions(positions, plans = {}) {
+      const active = Object.entries(positions || {})
+        .filter(([, position]) => positionSide(position) !== "FLAT");
+      if (!active.length) {
+        return `<div class="value small">Không có</div>`;
+      }
+      return `
+        <div class="open-position-list">
+          ${active.map(([symbol, position]) => {
+        const side = positionSide(position);
+        const quantity = Math.abs(Number(position.quantity || 0));
+        const avgPrice = Number(position.avg_price || 0);
+        const plan = plans[symbol] || {};
+        const priceDigits = avgPrice > 100 ? 2 : 4;
+        const stop = Number(plan.stop_price || 0);
+        const target = Number(plan.take_profit_price || 0);
+        return `
+              <div class="open-position-row">
+                <span class="signal ${directionClass(side)}">${side}</span>
+                <div>
+                  <div class="open-position-main">${symbol} ${number(quantity, 4)}</div>
+                  <div class="open-position-sub">Entry ${money(avgPrice, priceDigits)}</div>
+                </div>
+                <div>
+                  <div class="open-position-main">SL ${stop ? money(stop, priceDigits) : "--"}</div>
+                  <div class="open-position-sub">TP ${target ? money(target, priceDigits) : "--"}</div>
+                </div>
+              </div>
+            `;
+      }).join("")}
+        </div>
+      `;
+    }
+
+    function formatClock(timeMs) {
+      if (!Number.isFinite(Number(timeMs)) || Number(timeMs) <= 0) return "Chưa rõ";
+      return new Date(Number(timeMs)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    }
+
+    function positionLifecycle(symbol, position, orders) {
+      let quantity = 0;
+      let open = null;
+      let latestClosed = null;
+      const sorted = [...(orders || [])]
+        .filter((order) => order.symbol === symbol && Number(order.quantity || 0) > 0)
+        .sort((a, b) => Number(a.timeMs || 0) - Number(b.timeMs || 0));
+      for (const order of sorted) {
+        const before = quantity;
+        const signed = order.side === "LONG" ? Number(order.quantity || 0) : -Number(order.quantity || 0);
+        quantity += signed;
+        if (Math.abs(before) < 1e-12 && Math.abs(quantity) > 1e-12) {
+          open = {
+            side: quantity > 0 ? "LONG" : "SHORT",
+            timeMs: order.timeMs,
+            price: order.price,
+            label: order.label
+          };
+        }
+        if (Math.abs(before) > 1e-12 && Math.abs(quantity) < 1e-12 && open) {
+          latestClosed = {
+            ...open,
+            closeTimeMs: order.timeMs,
+            closePrice: order.price,
+            closeLabel: order.label,
+            exitSide: order.side
+          };
+          open = null;
+        }
+      }
+      const side = positionSide(position);
+      if (side !== "FLAT") {
+        return {
+          status: "active",
+          side,
+          openTimeMs: open?.timeMs,
+          openPrice: open?.price || Number(position?.avg_price || 0),
+          closeTimeMs: null,
+          closePrice: null
+        };
+      }
+      if (latestClosed) {
+        return {
+          status: "closed",
+          side: latestClosed.side,
+          openTimeMs: latestClosed.timeMs,
+          openPrice: latestClosed.price,
+          closeTimeMs: latestClosed.closeTimeMs,
+          closePrice: latestClosed.closePrice
+        };
+      }
+      return {
+        status: "idle",
+        side: "FLAT",
+        openTimeMs: null,
+        openPrice: null,
+        closeTimeMs: null,
+        closePrice: null
+      };
+    }
+
+    function renderPositionStrip(symbol, position, lifecycle, plan) {
+      const statusText = lifecycle.status === "active"
+        ? `ĐANG MỞ ${lifecycle.side}`
+        : lifecycle.status === "closed"
+          ? `ĐÃ ĐÓNG ${lifecycle.side}`
+          : "CHƯA CÓ VỊ THẾ";
+      const className = lifecycle.status === "active" ? "active" : lifecycle.status === "closed" ? "closed" : "";
+      const priceDigits = Number(lifecycle.openPrice || plan?.entry_price || position?.avg_price || 0) > 100 ? 2 : 4;
+      const closeText = lifecycle.status === "active" ? "Đang chạy" : formatClock(lifecycle.closeTimeMs);
+      const closePrice = lifecycle.closePrice ? money(lifecycle.closePrice, priceDigits) : "--";
+      return `
+        <div class="position-strip ${className}">
+          <div class="position-cell">
+            <div class="position-label">${symbol}</div>
+            <div class="position-value">${statusText}</div>
+          </div>
+          <div class="position-cell">
+            <div class="position-label">Mở lúc</div>
+            <div class="position-value">${formatClock(lifecycle.openTimeMs)} | ${lifecycle.openPrice ? money(lifecycle.openPrice, priceDigits) : "--"}</div>
+          </div>
+          <div class="position-cell">
+            <div class="position-label">Đóng lúc</div>
+            <div class="position-value">${closeText} | ${closePrice}</div>
+          </div>
+          <div class="position-cell">
+            <div class="position-label">SL / TP</div>
+            <div class="position-value">${plan ? `${money(plan.stop_price, priceDigits)} / ${money(plan.take_profit_price, priceDigits)}` : "-- / --"}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMarketCharts(payload) {
+      updateOrderMarkers(payload);
+      for (const symbol of SYMBOLS) updateSymbolHistory(payload, symbol);
+      updateChartStatus();
+      els.marketCharts.innerHTML = SYMBOLS.map((symbol) => renderSymbolCard(payload, symbol)).join("");
+    }
+
+    function renderSymbolCard(payload, symbol) {
+      const signal = (payload.signals || []).find((item) => item.symbol === symbol);
+      const plan = payload.trade_plans?.[symbol] || null;
+      const position = payload.positions?.[symbol] || null;
+      const history = state.histories[symbol] || [];
+      const latest = history[history.length - 1];
+      const first = history[0];
+      const changePct = history.length >= 2 && first?.price ? ((latest.price / first.price) - 1) * 100 : 0;
+      const priceDigits = latest?.price > 100 ? 2 : 4;
+      const symbolOrders = state.orderHistory[symbol] || [];
+      const lifecycle = positionLifecycle(symbol, position, symbolOrders);
+      const chart = renderSymbolChart(symbol, history, plan, position, symbolOrders, signal, payload.tick || 0);
+      const sideClass = directionClass(signal?.direction || "FLAT");
+      const currentSide = positionSide(position);
+      const positionText = describePosition(symbol, position);
+      const planText = plan ? describePlan(plan) : (positionText || "Chưa có vị thế");
+      const badgeText = currentSide !== "FLAT" ? `ĐANG GIỮ ${currentSide}` : (signal?.direction || "FLAT");
+      const badgeClass = currentSide !== "FLAT" ? directionClass(currentSide) : sideClass;
+
+      const width = 1120;
+      const height = 340;
+      return `
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-symbol">${symbol}</div>
+              <div class="subtle">${latest ? `${history.length} điểm | ${latest.label}` : "Đang chờ dữ liệu"}</div>
+            </div>
+            <span class="signal ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="chart-summary">
+            <div class="chart-kpi">
+              <div class="label">Giá</div>
+              <div class="value">${latest ? money(latest.price, priceDigits) : "--"}</div>
+            </div>
+            <div class="chart-kpi">
+              <div class="label">Biến động view</div>
+              <div class="value small ${changePct > 0 ? "positive" : changePct < 0 ? "negative" : ""}">${latest ? signedPercent(changePct, 2) : "--"}</div>
+            </div>
+            <div class="chart-kpi">
+              <div class="label">Score / Conf</div>
+              <div class="value small">${number(signal?.score || 0, 3)} / ${number(signal?.confidence || 0, 2)}</div>
+            </div>
+            <div class="chart-kpi">
+              <div class="label">Kế hoạch</div>
+              <div class="value small">${planText}</div>
+            </div>
+          </div>
+          ${renderPositionStrip(symbol, position, lifecycle, plan)}
+          <div class="chart-frame">
+            <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Biểu đồ giá ${symbol}">${chart}</svg>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderSymbolChart(symbol, history, plan, position, orders, signal, currentTick) {
+      if (!history.length) {
+        return `
+          <rect x="0" y="0" width="1120" height="340" fill="#f8fbff"></rect>
+          <text x="560" y="170" text-anchor="middle" fill="#6c6255" font-size="16">Chưa có dữ liệu ${symbol} để vẽ biểu đồ.</text>
+        `;
+      }
+
+      const latest = history[history.length - 1];
+      const first = history[0];
+      const width = 1120;
+      const height = 340;
+      const padTop = 24;
+      const padRight = 104;
+      const padBottom = 34;
+      const padLeft = 18;
+      const plotWidth = width - padLeft - padRight;
+      const plotHeight = height - padTop - padBottom;
+      const overlayValues = history.flatMap((point) => [
+        Number(point.open || point.price || 0),
+        Number(point.high || point.price || 0),
+        Number(point.low || point.price || 0),
+        Number(point.close || point.price || 0)
+      ]);
+      if (plan) {
+        overlayValues.push(Number(plan.entry_price || 0));
+        overlayValues.push(Number(plan.stop_price || 0));
+        overlayValues.push(Number(plan.take_profit_price || 0));
+      }
+      if (positionSide(position) !== "FLAT") {
+        overlayValues.push(Number(position.avg_price || 0));
+      }
+      for (const order of orders) overlayValues.push(Number(order.price || 0));
+      const minPriceRaw = Math.min(...overlayValues);
+      const maxPriceRaw = Math.max(...overlayValues);
+      const midPrice = latest?.price || signal?.price || 1;
+      const priceSpan = Math.max(maxPriceRaw - minPriceRaw, Math.max(midPrice * 0.0015, midPrice > 100 ? 12 : 0.06));
+      const minPrice = minPriceRaw - priceSpan * 0.08;
+      const maxPrice = maxPriceRaw + priceSpan * 0.08;
+      const yFor = (price) => padTop + ((maxPrice - price) / (maxPrice - minPrice || 1)) * plotHeight;
+      const xFor = (index, total) => {
+        if (total <= 1) return padLeft + plotWidth;
+        return padLeft + (index / (total - 1)) * plotWidth;
+      };
+
+      const candleWidth = clamp(plotWidth / Math.max(history.length, 1) * 0.72, 1.6, 18);
+      const historyPoints = history.map((point, index) => ({
+        x: xFor(index, history.length),
+        y: yFor(point.close || point.price),
+        open: Number(point.open || point.price || 0),
+        high: Number(point.high || point.price || 0),
+        low: Number(point.low || point.price || 0),
+        close: Number(point.close || point.price || 0),
+        price: Number(point.close || point.price || 0),
+        label: point.label
+      }));
+      const renderCandle = (point) => {
+        const up = point.close >= point.open;
+        const color = up ? "#008f72" : "#ff3b30";
+        const yHigh = yFor(point.high);
+        const yLow = yFor(point.low);
+        const yOpen = yFor(point.open);
+        const yClose = yFor(point.close);
+        const bodyY = Math.min(yOpen, yClose);
+        const bodyHeight = Math.max(3, Math.abs(yClose - yOpen));
+        return `
+          <line x1="${point.x.toFixed(2)}" y1="${yHigh.toFixed(2)}" x2="${point.x.toFixed(2)}" y2="${yLow.toFixed(2)}" stroke="${color}" stroke-width="${candleWidth < 3 ? 1 : 2}"></line>
+          <rect x="${(point.x - candleWidth / 2).toFixed(2)}" y="${bodyY.toFixed(2)}" width="${candleWidth.toFixed(2)}" height="${bodyHeight.toFixed(2)}" fill="${up ? "rgba(52, 199, 89, 0.18)" : "rgba(255, 59, 48, 0.16)"}" stroke="${color}" stroke-width="${candleWidth < 3 ? 1 : 2}"></rect>
+        `;
+      };
+
+      const gridLevels = Array.from({ length: 4 }, (_, index) => {
+        const ratio = index / 3;
+        const price = maxPrice - ((maxPrice - minPrice) * ratio);
+        const y = padTop + plotHeight * ratio;
+        return { price, y };
+      });
+
+      const renderGuideLine = (price, color, label) => {
+        if (!Number.isFinite(price) || price <= 0) return "";
+        const y = yFor(price);
+        return `
+          <line x1="${padLeft}" y1="${y.toFixed(2)}" x2="${(width - padRight + 18).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${color}" stroke-width="1.5" stroke-dasharray="6 5"></line>
+          <text x="${(width - padRight + 24).toFixed(2)}" y="${(y + 4).toFixed(2)}" fill="${color}" font-size="11">${label}</text>
+        `;
+      };
+
+      const xForTime = (timeMs) => {
+        const firstMs = history[0]?.timeMs || timeMs;
+        const lastMs = history[history.length - 1]?.timeMs || timeMs;
+        if (lastMs <= firstMs) return width - padRight;
+        return padLeft + clamp((timeMs - firstMs) / (lastMs - firstMs), 0, 1) * plotWidth;
+      };
+      const renderOrderMarker = (order) => {
+        if (!Number.isFinite(order.price) || order.price <= 0) return "";
+        const x = xForTime(order.timeMs);
+        const y = yFor(order.price);
+        const fill = order.side === "LONG" ? "#008f72" : "#ff3b30";
+        const arrow = order.side === "LONG"
+          ? `${x.toFixed(2)},${(y - 8).toFixed(2)} ${(x - 7).toFixed(2)},${(y + 6).toFixed(2)} ${(x + 7).toFixed(2)},${(y + 6).toFixed(2)}`
+          : `${x.toFixed(2)},${(y + 8).toFixed(2)} ${(x - 7).toFixed(2)},${(y - 6).toFixed(2)} ${(x + 7).toFixed(2)},${(y - 6).toFixed(2)}`;
+        return `
+          <polygon points="${arrow}" fill="${fill}" stroke="#fff" stroke-width="1.5"></polygon>
+          <text x="${x.toFixed(2)}" y="${(y - 12).toFixed(2)}" text-anchor="middle" fill="${fill}" font-size="10">${order.side}</text>
+        `;
+      };
+      const renderPlanEntryMarker = () => {
+        const entryPrice = Number(plan?.entry_price || position?.avg_price || 0);
+        const side = plan?.side || positionSide(position);
+        if (!Number.isFinite(entryPrice) || entryPrice <= 0 || side === "FLAT") return "";
+        const tickDistance = Math.max(0, Number(currentTick || 0) - Number(plan?.created_tick || currentTick || 0));
+        const estimatedIndex = Math.max(0, Math.min(history.length - 1, history.length - 1 - tickDistance));
+        const x = xFor(estimatedIndex, history.length);
+        const y = yFor(entryPrice);
+        const fill = side === "LONG" ? "#008f72" : "#ff3b30";
+        return `
+          <circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="6" fill="#fff" stroke="${fill}" stroke-width="2"></circle>
+          <circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="2.5" fill="${fill}"></circle>
+          <text x="${x.toFixed(2)}" y="${(y - 11).toFixed(2)}" text-anchor="middle" fill="${fill}" font-size="10">ENTRY</text>
+        `;
+      };
+
+      const lastPoint = historyPoints[historyPoints.length - 1];
+      return `
+        <rect x="0" y="0" width="${width}" height="${height}" fill="#f8fbff"></rect>
+        ${gridLevels.map((item) => `
+          <line x1="${padLeft}" y1="${item.y.toFixed(2)}" x2="${(width - padRight).toFixed(2)}" y2="${item.y.toFixed(2)}" stroke="#dce7f3" stroke-width="1"></line>
+          <text x="${(width - padRight + 24).toFixed(2)}" y="${(item.y + 4).toFixed(2)}" fill="#667085" font-size="11">${money(item.price, 2)}</text>
+        `).join("")}
+        <line x1="${padLeft}" y1="${(height - padBottom).toFixed(2)}" x2="${(width - padRight).toFixed(2)}" y2="${(height - padBottom).toFixed(2)}" stroke="#d0dce8" stroke-width="1"></line>
+        ${historyPoints.map(renderCandle).join("")}
+        ${plan ? renderGuideLine(Number(plan.entry_price), "#667085", "Vào lệnh") : ""}
+        ${!plan && positionSide(position) !== "FLAT" ? renderGuideLine(Number(position.avg_price), "#667085", "Đang giữ") : ""}
+        ${plan ? renderGuideLine(Number(plan.stop_price), "#ff3b30", "SL") : ""}
+        ${plan ? renderGuideLine(Number(plan.take_profit_price), "#008f72", "TP") : ""}
+        ${renderPlanEntryMarker()}
+        ${orders.map(renderOrderMarker).join("")}
+        ${lastPoint ? `<circle cx="${lastPoint.x.toFixed(2)}" cy="${lastPoint.y.toFixed(2)}" r="4.5" fill="#0a84ff" stroke="#ffffff" stroke-width="2"></circle>` : ""}
+        <text x="${padLeft}" y="${height - 8}" fill="#667085" font-size="11">${first?.label || "--"}</text>
+        <text x="${(width - padRight - 4).toFixed(2)}" y="${height - 8}" text-anchor="end" fill="#667085" font-size="11">${latest?.label || "--"}</text>
+      `;
+    }
+
+    function renderSignals(signals) {
+      els.signalsBody.innerHTML = signals.map((signal) => {
+        const path = signal.expected_path || [];
+        const last = path[path.length - 1];
+        const expected = last ? money(last.expected_price, signal.price > 100 ? 2 : 4) : "-";
+        const whale = signal.components?.whale_net_usd ?? 0;
+        const flow = signal.components?.flow_score ?? 0;
+        const gatePassed = Number(signal.components?.gate_passed || 0);
+        const gateClass = gatePassed ? "long" : "flat";
+        const gateText = gatePassed ? "Qua" : "Chặn";
+        const trend = signal.components?.trend_score ?? 0;
+        const rsi = signal.components?.rsi ?? 50;
+        const lsScore = signal.components?.derivatives_score ?? 0;
+        const topRatio = signal.components?.top_long_short_ratio ?? 1;
+        const oiChange = signal.components?.open_interest_change_pct ?? 0;
+        return `
+          <tr>
+            <td><strong>${signal.symbol}</strong></td>
+            <td><span class="signal ${directionClass(signal.direction)}">${signal.direction}</span></td>
+            <td>${money(signal.price, signal.price > 100 ? 2 : 4)}</td>
+            <td><div>${expected}</div><div class="path">${signal.rationale}</div></td>
+            <td><div class="scorebar"><span style="width:${scoreWidth(signal.confidence)}"></span></div><div class="muted">${number(signal.confidence, 2)}</div></td>
+            <td><div><span class="signal ${gateClass}">${gateText}</span></div><div class="muted">EMA ${number(trend, 2)} | RSI ${number(rsi, 0)} | LS ${number(lsScore, 2)} / ${number(topRatio, 2)} | OI ${signedPercent(Number(oiChange) * 100, 2)}</div></td>
+            <td>${money(whale, 0)}</td>
+            <td>${number(flow, 3)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function proposalClass(proposal) {
+      if ((proposal.action || "").startsWith("CANH")) return directionClass(proposal.direction);
+      if ((proposal.action || "").startsWith("CHO")) return "flat";
+      return "short";
+    }
+
+    function trendClass(trend) {
+      if (trend.bias === "LONG") return "long";
+      if (trend.bias === "SHORT") return "short";
+      return "flat";
+    }
+
+    function trendNoteLabel(text) {
+      const labels = {
+        "Cho them du lieu, hai phe chua co uu the ro.": "Chờ thêm dữ liệu, hai phe chưa có ưu thế rõ.",
+        "Co the canh LONG khi gia hoi nhe va cum cung huong tiep tuc day.": "Có thể canh LONG khi giá hồi nhẹ và cụm cùng hướng tiếp tục đẩy.",
+        "Co the canh SHORT khi gia hoi nhe va cum cung huong tiep tuc day.": "Có thể canh SHORT khi giá hồi nhẹ và cụm cùng hướng tiếp tục đẩy.",
+        "Canh LONG, nhung uu tien vao khi thanh khoan bung them.": "Canh LONG, ưu tiên vào khi thanh khoản bung thêm.",
+        "Canh SHORT, nhung uu tien vao khi thanh khoan bung them.": "Canh SHORT, ưu tiên vào khi thanh khoản bung thêm.",
+        "Chi quan sat LONG; phai sinh chua dong thuan day du.": "Chỉ quan sát LONG; phái sinh chưa đồng thuận đầy đủ.",
+        "Chi quan sat SHORT; phai sinh chua dong thuan day du.": "Chỉ quan sát SHORT; phái sinh chưa đồng thuận đầy đủ.",
+        "Chua du dieu kien LONG; doi tape va taker xac nhan lai.": "Chưa đủ điều kiện LONG; đợi tape và taker xác nhận lại.",
+        "Chua du dieu kien SHORT; doi tape va taker xac nhan lai.": "Chưa đủ điều kiện SHORT; đợi tape và taker xác nhận lại."
+      };
+      return labels[text] || text;
+    }
+
+    function actionLabel(text) {
+      return (text || "TRUNG LAP")
+        .replace("SONG LONG", "SÓNG LONG")
+        .replace("SONG SHORT", "SÓNG SHORT")
+        .replace("CANH LONG", "CANH LONG")
+        .replace("CANH SHORT", "CANH SHORT")
+        .replace("THEO DOI LONG", "THEO DÕI LONG")
+        .replace("THEO DOI SHORT", "THEO DÕI SHORT")
+        .replace("TRUNG LAP", "TRUNG LẬP");
+    }
+
+    function proposalActionLabel(text) {
+      return (text || "TRACH VAO")
+        .replace("VAO LENH", "VÀO LỆNH")
+        .replace("CHO XAC NHAN", "CHỜ XÁC NHẬN")
+        .replace("TRACH VAO", "TRÁNH VÀO");
+    }
+
+    function latestBlocker(payload) {
+      const skipped = payload.skipped_trades || [];
+      const reviews = payload.trade_reviews || [];
+      const latestSkip = skipped.length ? skipped[skipped.length - 1] : null;
+      const latestReview = reviews.length ? reviews[reviews.length - 1] : null;
+      const raw = latestSkip?.reason || latestReview?.reason || latestReview?.verdict || "Đang chờ tín hiệu đủ sạch";
+      return blockerLabel(raw).replaceAll("_", " ");
+    }
+
+    function bestOrderflowTrend(trends) {
+      return [...(trends || [])].sort((a, b) => {
+        const ar = Number(a.readiness || 0);
+        const br = Number(b.readiness || 0);
+        if (br !== ar) return br - ar;
+        return Math.abs(Number(b.net_ratio || 0)) - Math.abs(Number(a.net_ratio || 0));
+      })[0] || null;
+    }
+
+    function bestClusterProposal(proposals) {
+      return [...(proposals || [])].sort((a, b) => Number(b.priority || 0) - Number(a.priority || 0))[0] || null;
+    }
+
+    function bestSignal(signals) {
+      return [...(signals || [])].sort((a, b) => Math.abs(Number(b.score || 0)) - Math.abs(Number(a.score || 0)))[0] || null;
+    }
+
+    function openPositionSummary(positions = {}) {
+      const open = Object.entries(positions).filter(([, position]) => Math.abs(Number(position.quantity || 0)) > 0);
+      if (!open.length) return { count: 0, label: "Không có vị thế", detail: "Bot đang ở chế độ chờ/scan, chưa khóa vốn." };
+      const labels = open.map(([symbol, position]) => {
+        const side = Number(position.quantity || 0) > 0 ? "LONG" : "SHORT";
+        return `${symbol} ${side}`;
+      });
+      return {
+        count: open.length,
+        label: labels.join(" | "),
+        detail: `${open.length} vị thế mở, ưu tiên quản trị SL/TP và trailing.`
+      };
+    }
+
+    function renderBotThesis(payload) {
+      const trends = payload.orderflow_trends || [];
+      const proposals = payload.cluster_proposals || [];
+      const trend = bestOrderflowTrend(trends);
+      const proposal = bestClusterProposal(proposals);
+      const signal = bestSignal(payload.signals || []);
+      const perf = payload.performance || {};
+      const positions = openPositionSummary(payload.positions || {});
+      const orders = Number(payload.order_count || 0);
+      const lossStreaks = Object.entries(perf.loss_streaks || {}).filter(([, value]) => Number(value || 0) > 0);
+      const currentTick = Number(payload.tick || 0);
+      const globalCooldownUntil = Number(perf.global_cooldown_until || 0);
+      const globalGuardActive = globalCooldownUntil > currentTick;
+      const readiness = Number(trend?.readiness || 0);
+      const readyText = trend ? `${trend.symbol} ${actionLabel(trend.action)} - ${percent(readiness, 0)}` : "Chưa có sóng rõ";
+      const edgeDetail = trend
+        ? `Net ${signedPercent(Number(trend.net_ratio || 0) * 100, 0)}, sync ${percent(trend.max_sync || 0, 0)}, mẫu ${trend.sample_count || 0}.`
+        : "Đang gom dữ liệu BTC/ETH/SOL từ cụm lệnh Binance.";
+      const proposalText = proposal ? `${proposal.symbol} ${proposal.direction}` : "Chưa có setup sạch";
+      const proposalDetail = proposal
+        ? `Ưu tiên ${percent(proposal.priority || 0, 0)}, xác nhận ${proposal.confirmations || 0}/5, action ${proposalActionLabel(proposal.action)}.`
+        : "Chờ cụm đồng thuận cao vượt bộ lọc xung đột.";
+      const riskText = positions.count
+        ? positions.label
+        : globalGuardActive
+          ? "SAFE MODE: tạm dừng toàn bot"
+          : latestBlocker(payload);
+      const cooldownText = globalGuardActive ? `global cooldown tới nhịp ${globalCooldownUntil}` : "global ok";
+      const costDetail = `Phí ${money(perf.total_fees || 0, 2)}, win ${percent(perf.win_rate || 0, 0)}, streak ${lossStreaks.length ? lossStreaks.map(([s, v]) => `${s}:${v}`).join(" ") : "sạch"}, ${cooldownText}.`;
+      const components = signal?.components || {};
+      const mlProbability = Number(components.ml_win_probability || 0);
+      const mlExpectancy = Number(components.ml_expectancy_r || 0);
+      const regimeDetail = signal
+        ? `${signal.symbol} ${components.regime_score >= 0 ? "+" : ""}${number(components.regime_score || 0, 2)} | ML ${mlProbability ? percent(mlProbability, 0) : "n/a"} / ${mlExpectancy >= 0 ? "+" : ""}${number(mlExpectancy, 2)}R | book ${number(components.orderbook_imbalance || 0, 2)} / spread ${number(components.spread_bps || 0, 1)}bps | funding ${signedPercent(Number(components.funding_rate || 0) * 100, 4)}`
+        : "Chưa có tín hiệu đủ dữ liệu regime/orderbook/funding.";
+      const mode = positions.count ? "MANAGE POSITION" : readiness >= 0.5 ? "READY WATCH" : readiness >= 0.18 ? "CANH SETUP" : "SCANNER ONLY";
+
+      els.botThesisStatus.textContent = `${mode} | ${trends.length} cặp | ${orders} lệnh`;
+      els.botThesisCards.innerHTML = [
+        {
+          label: "Edge scanner",
+          value: readyText,
+          detail: edgeDetail,
+          tone: trendClass(trend || {})
+        },
+        {
+          label: "Repeat setup",
+          value: proposalText,
+          detail: proposalDetail,
+          tone: proposal ? directionClass(proposal.direction) : "flat"
+        },
+        {
+          label: "Risk / cost gate",
+          value: riskText,
+          detail: costDetail,
+          tone: globalGuardActive ? "short" : positions.count ? "long" : "flat"
+        },
+        {
+          label: "Execution state",
+          value: signal ? `${signal.symbol} ${components.higher_tf_score >= 0 ? "HTF +" : "HTF -"}` : `${orders} lệnh paper`,
+          detail: regimeDetail,
+          tone: Number(components.higher_tf_score || 0) > 0.08 ? "long" : Number(components.higher_tf_score || 0) < -0.08 ? "short" : "flat"
+        }
+      ].map((card) => `
+        <div class="strategy-card">
+          <div class="strategy-label">${card.label}</div>
+          <div class="strategy-value ${card.tone === "long" ? "positive" : card.tone === "short" ? "negative" : ""}">${card.value}</div>
+          <div class="strategy-detail">${card.detail}</div>
+        </div>
+      `).join("");
+
+      const confirmed = Boolean(proposal && Number(proposal.confirmations || 0) >= 3);
+      const hasRisk = !globalGuardActive && (positions.count > 0 || confirmed);
+      const flow = [
+        ["1", "Scan", trend ? `${trend.symbol} tape` : "gom dữ liệu", Boolean(trend)],
+        ["2", "Confirm", confirmed ? "cụm đồng thuận" : "đợi thêm", confirmed],
+        ["3", "Size", hasRisk ? "risk/cost ok" : "chưa mở vốn", hasRisk],
+        ["4", "Execute", positions.count ? positions.label : "paper wait", positions.count > 0],
+        ["5", "Review", orders ? `${orders} lệnh` : "chưa có mẫu", orders > 0]
+      ];
+      els.botThesisFlow.innerHTML = flow.map(([kicker, title, detail, active]) => `
+        <div class="flow-step ${active ? "active" : ""}">
+          <div class="flow-kicker">Bước ${kicker}</div>
+          <div class="flow-title">${title}</div>
+          <div class="strategy-detail">${detail}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderOrderflowTrends(trends) {
+      const sampleCount = trends.reduce((best, trend) => Math.max(best, Number(trend.sample_count || 0)), 0);
+      els.trendStatus.textContent = `${trends.length} cặp | ${sampleCount} mẫu gần nhất`;
+      els.trendBody.innerHTML = trends.length ? trends.map((trend) => {
+        const net = Number(trend.net_ratio || 0);
+        const velocity = Number(trend.velocity || 0);
+        const expansion = Number(trend.liquidity_expansion || 0);
+        return `
+          <tr>
+            <td><strong>${trend.symbol}</strong><div class="path">AI: ${trend.ai_direction || "FLAT"} / conf ${number(trend.ai_confidence || 0, 2)}</div></td>
+            <td><span class="signal ${trendClass(trend)}">${actionLabel(trend.action)}</span></td>
+            <td>
+              <div class="scorebar"><span style="width:${scoreWidth(trend.readiness)}"></span></div>
+              <div class="muted">${percent(trend.readiness, 0)}</div>
+            </td>
+            <td>
+              <div><strong>${money(trend.long_usd, 0)} / ${money(trend.short_usd, 0)}</strong></div>
+              <div class="muted">net ${signedPercent(net * 100, 0)} | sync ${percent(trend.max_sync, 1)}</div>
+            </td>
+            <td>
+              <div class="${velocity > 0 ? "positive" : velocity < 0 ? "negative" : ""}">${signedPercent(velocity * 100, 1)}</div>
+              <div class="muted">thanh khoản ${signedPercent(expansion * 100, 0)}</div>
+            </td>
+            <td>
+              <div class="proposal-detail">
+                <span>BP ${percent(trend.buy_pressure, 0)} | taker ${number(trend.taker_buy_sell_ratio, 2)}</span>
+                <span class="muted">LS ${number(trend.derivatives_score, 2)} | RSI ${number(trend.rsi, 0)}</span>
+              </div>
+            </td>
+            <td><div class="proposal-detail muted">${trendNoteLabel(trend.entry_note)}</div></td>
+          </tr>
+        `;
+      }).join("") : `
+        <tr>
+          <td colspan="7" class="muted">Đang thu thập orderflow từ Binance.</td>
+        </tr>
+      `;
+    }
+
+    function blockerLabel(text) {
+      const labels = {
+        "hai phe co cum lon gan nhau": "Hai phe có cụm lớn gần nhau",
+        "buy pressure chua ung ho": "Buy pressure chưa ủng hộ",
+        "sell pressure chua ro": "Sell pressure chưa rõ",
+        "taker buy/sell chua xac nhan": "Taker buy/sell chưa xác nhận",
+        "phai sinh chua dong huong": "Phái sinh chưa đồng hướng",
+        "RSI dang o vung de bi quet": "RSI đang ở vùng dễ bị quét",
+        "AI gate chua cho vao lenh": "AI gate chưa cho vào lệnh"
+      };
+      return labels[text] || text;
+    }
+
+    function renderClusterProposals(proposals) {
+      els.proposalStatus.textContent = `${proposals.length} đề xuất | lọc sync >= 76%, conf >= 86%`;
+      els.proposalBody.innerHTML = proposals.length ? proposals.map((proposal) => {
+        const priceDigits = Number(proposal.price || 0) > 100 ? 2 : 4;
+        const blockers = (proposal.blockers || []).length ? proposal.blockers.map(blockerLabel).join(" | ") : "Đủ điều kiện chính";
+        return `
+          <tr>
+            <td><strong>${proposal.symbol}</strong><div class="path">AI: ${proposal.ai_direction || "FLAT"} / conf ${number(proposal.ai_confidence || 0, 2)}</div></td>
+            <td><span class="signal ${proposalClass(proposal)}">${proposalActionLabel(proposal.action)}</span></td>
+            <td>
+              <div class="scorebar"><span style="width:${scoreWidth(proposal.priority)}"></span></div>
+              <div class="muted">${percent(proposal.priority, 0)}</div>
+            </td>
+            <td>
+              <div class="proposal-detail">
+                <strong>${proposal.direction} chiếm ${percent(proposal.dominant_share, 0)}</strong>
+                <span class="muted">${proposal.dominant_clusters} cụm / ${money(proposal.dominant_usd, 0)} | xung đột ${percent(proposal.conflict_share, 0)}</span>
+                <span class="muted">sync max ${percent(proposal.max_sync, 1)} | xác nhận ${proposal.confirmations}/5</span>
+              </div>
+            </td>
+            <td><div class="proposal-detail muted">${blockers}</div></td>
+            <td>
+              <div class="proposal-detail">
+                <strong>${money(proposal.entry_hint, priceDigits)}</strong>
+                <span class="muted">SL ${money(proposal.stop_hint, priceDigits)} | TP ${money(proposal.take_profit_hint, priceDigits)}</span>
+                <span class="muted">BP ${percent(proposal.buy_pressure, 0)} | taker ${number(proposal.taker_buy_sell_ratio, 2)} | RSI ${number(proposal.rsi, 0)}</span>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("") : `
+        <tr>
+          <td colspan="6" class="muted">Chưa có cụm đồng thuận cao đủ rõ để đưa vào watchlist.</td>
+        </tr>
+      `;
+    }
+
+    function renderClusters(clusters) {
+      const strongClusters = clusters.filter((cluster) => Number(cluster.sync_score || 0) >= 0.76 && Number(cluster.confidence || 0) >= 0.86);
+      const rows = strongClusters.length ? strongClusters : clusters;
+      els.clusterCount.textContent = `${strongClusters.length}/${clusters.length} cụm mạnh`;
+      els.clustersBody.innerHTML = rows.length ? rows.map((cluster) => `
+        <tr>
+          <td><strong>${cluster.cluster_id}</strong><div class="path">${cluster.rationale}</div></td>
+          <td>${cluster.symbol}</td>
+          <td><span class="signal ${directionClass(cluster.direction)}">${cluster.direction}</span></td>
+          <td>${cluster.wallet_count}</td>
+          <td>${money(cluster.total_usd, 0)}</td>
+          <td>${percent(cluster.sync_score, 1)}</td>
+          <td>${percent(cluster.historical_edge, 1)}</td>
+        </tr>
+      `).join("") : `
+        <tr>
+          <td colspan="7" class="muted">Chưa có cụm đủ mạnh trong cửa sổ hiện tại.</td>
+        </tr>
+      `;
+    }
+
+    const LEARNER_COMPONENTS = {
+      momentum: {
+        label: "Đà giá",
+        desc: "Đo giá đang tăng/giảm nhanh; hữu ích khi bắt sóng ngắn."
+      },
+      whale: {
+        label: "Dòng cá mập",
+        desc: "Đo net USD từ ví/cụm lớn; giúp phát hiện lực đẩy bất thường."
+      },
+      flow: {
+        label: "Áp lực mua/bán",
+        desc: "Đo buy pressure và volume tape; lọc bên nào đang chủ động."
+      },
+      trend: {
+        label: "Xu hướng EMA",
+        desc: "Đo EMA nhanh/chậm; tránh vào ngược nhịp xu hướng ngắn."
+      },
+      rsi: {
+        label: "RSI",
+        desc: "Đo vùng quá nóng/quá lạnh; giảm vào lệnh khi dễ bị quét."
+      },
+      smart_money: {
+        label: "Cụm smart money",
+        desc: "Đo cụm 5 phút đồng thuận; trọng tâm của setup bắt sóng."
+      },
+      derivatives: {
+        label: "Phái sinh",
+        desc: "Đo long/short, taker ratio, open interest; xác nhận futures có đồng pha."
+      }
+    };
+
+    function learnerComponentLabel(name) {
+      return LEARNER_COMPONENTS[name]?.label || name;
+    }
+
+    function learnerComponentDesc(name) {
+      return LEARNER_COMPONENTS[name]?.desc || "Thành phần phụ trong điểm tín hiệu tổng hợp.";
+    }
+
+    function renderLearner(summary) {
+      const edges = summary.component_edges || {};
+      const weights = summary.component_weights || {};
+      const names = Object.keys(weights);
+      els.learnerStatus.textContent = `${summary.resolved || 0} kết quả | ${summary.pending || 0} đang chờ`;
+      els.learnerBody.innerHTML = names.length ? names.map((name) => {
+        const edge = Number(edges[name] || 0);
+        const weight = Number(weights[name] || 0);
+        return `
+          <tr>
+            <td><strong>${learnerComponentLabel(name)}</strong><div class="path">${name}</div></td>
+            <td><div class="proposal-detail muted">${learnerComponentDesc(name)}</div></td>
+            <td class="${edge > 0 ? "positive" : edge < 0 ? "negative" : ""}">${edge >= 0 ? "+" : ""}${number(edge, 3)}</td>
+            <td>${number(weight, 3)}</td>
+          </tr>
+        `;
+      }).join("") : `
+        <tr>
+          <td colspan="4" class="muted">Chưa có dữ liệu học.</td>
+        </tr>
+      `;
+    }
+
+    function renderCostReviews(reviews, skipped) {
+      const rows = reviews.length ? reviews.slice(-10).reverse() : skipped.slice(-10).reverse();
+      els.costStatus.textContent = `${reviews.length} kiểm tra | ${skipped.length} bị bỏ`;
+      els.costBody.innerHTML = rows.length ? rows.map((review) => {
+        const accepted = Boolean(review.accepted);
+        return `
+          <tr>
+            <td><strong>${review.symbol}</strong><div class="path">${review.reason}</div></td>
+            <td><span class="signal ${directionClass(review.side)}">${review.side}</span></td>
+            <td><span class="signal ${accepted ? "long" : "flat"}">${accepted ? "Chấp nhận" : "Bỏ qua"}</span></td>
+            <td>${money(review.notional, 0)}</td>
+            <td>${money(review.total_cost, 2)}</td>
+            <td>${money(review.expected_edge, 2)}</td>
+            <td>${number(review.edge_cost_ratio, 2)}</td>
+          </tr>
+        `;
+      }).join("") : `
+        <tr>
+          <td colspan="7" class="muted">Chưa có lệnh nào cần kiểm tra phí.</td>
+        </tr>
+      `;
+    }
+
+    function alertToneClass(item) {
+      if (item.type === "order") return "order";
+      return "";
+    }
+
+    function pushTradeAlert(item) {
+      const key = item.key || `${item.type}:${item.symbol}:${item.side}:${item.price}`;
+      if (state.notifiedAlerts.has(key)) return;
+      state.notifiedAlerts.add(key);
+      if (state.notifiedAlerts.size > 80) {
+        state.notifiedAlerts = new Set(Array.from(state.notifiedAlerts).slice(-80));
+      }
+      state.tradeAlerts.unshift({
+        ...item,
+        key,
+        time: new Date().toLocaleTimeString()
+      });
+      state.tradeAlerts = state.tradeAlerts.slice(0, 4);
+      renderTradeAlerts();
+    }
+
+    function renderTradeAlerts() {
+      els.tradeAlertStack.innerHTML = state.tradeAlerts.map((item) => `
+        <div class="trade-alert ${alertToneClass(item)}">
+          <div class="trade-alert-top">
+            <span class="trade-alert-title">${item.title}</span>
+            <span class="trade-alert-actions">
+              <span class="signal ${directionClass(item.side)}">${item.side}</span>
+              <button class="trade-alert-close" type="button" data-alert-key="${item.key}" aria-label="An thong bao">x</button>
+            </span>
+          </div>
+          <div class="trade-alert-detail">${item.detail}</div>
+          <div class="trade-alert-detail">${item.time}</div>
+        </div>
+      `).join("");
+    }
+
+    function dismissTradeAlert(key) {
+      state.tradeAlerts = state.tradeAlerts.filter((item) => item.key !== key);
+      renderTradeAlerts();
+    }
+
+    function renderEvents(payload) {
+      for (const event of payload.whale_events || []) {
+        pushFeed({
+          type: "whale",
+          title: `Cá mập ${event.direction} ${event.token_symbol}`,
+          detail: event.tx_hash,
+          amount: money(event.usd_value, 0)
+        });
+      }
+      for (const order of payload.orders || []) {
+        const price = Number(order.fill_price || 0);
+        const priceDigits = price > 100 ? 2 : 4;
+        pushTradeAlert({
+          type: "order",
+          side: order.side,
+          symbol: order.symbol,
+          price,
+          key: `order:${order.timestamp || payload.tick}:${order.symbol}:${order.side}:${price}:${order.quantity}`,
+          title: `Đã khớp lệnh ${order.symbol}`,
+          detail: `${order.side} ${number(order.quantity, 6)} tại ${money(price, priceDigits)} | notional ${money(order.notional, 0)}`
+        });
+        pushFeed({
+          type: "order",
+          title: `Lệnh ${order.side} ${order.symbol}`,
+          detail: `khối lượng ${number(order.quantity, 6)} tại ${money(order.fill_price, 4)} | phí+gas ${money(order.total_execution_cost, 2)}`,
+          amount: money(order.notional, 0)
+        });
+      }
+      for (const review of payload.skipped_trades || []) {
+        pushFeed({
+          type: "skip",
+          title: `Bỏ qua ${review.side} ${review.symbol}`,
+          detail: `edge ${money(review.expected_edge, 2)} thấp hơn yêu cầu ${money(review.min_required_edge, 2)}`,
+          amount: money(review.total_cost, 2)
+        });
+      }
+      for (const cluster of payload.smart_money_clusters || []) {
+        pushFeed({
+          type: "cluster",
+          title: `Cụm ${cluster.direction} ${cluster.symbol}`,
+          detail: `${cluster.wallet_count} nhịp lệnh đồng pha - ${cluster.cluster_id}`,
+          amount: money(cluster.total_usd, 0)
+        });
+      }
+      const whaleNet = (payload.signals || []).reduce((sum, signal) => {
+        return sum + Number(signal.components?.whale_net_usd || 0);
+      }, 0);
+      els.whaleValue.textContent = money(whaleNet, 0);
+      renderFeed();
+    }
+
+    function renderWarnings(warnings) {
+      for (const warning of warnings || []) {
+        pushFeed({
+          type: "warning",
+          title: "Canh bao du lieu",
+          detail: warning,
+          amount: ""
+        });
+      }
+      renderFeed();
+    }
+
+    function pushFeed(item) {
+      state.feed.unshift({
+        ...item,
+        time: new Date().toLocaleTimeString()
+      });
+      state.feed = state.feed.slice(0, 20);
+    }
+
+    function renderFeed() {
+      els.tapeCount.textContent = `${state.feed.length} sự kiện`;
+      els.feed.innerHTML = state.feed.length ? state.feed.map((item) => `
+        <div class="event">
+          <div class="event-top">
+            <span>${item.title}</span>
+            <span>${item.amount}</span>
+          </div>
+          <div class="muted">${item.detail}</div>
+          <div class="muted">${item.time}</div>
+        </div>
+      `).join("") : `<div class="event"><div class="muted">Chưa có sự kiện</div></div>`;
+    }
+
+    els.runBtn.addEventListener("click", run);
+    els.stepBtn.addEventListener("click", tick);
+    els.resetBtn.addEventListener("click", reset);
+    els.tradeAlertStack.addEventListener("click", (event) => {
+      const closeBtn = event.target.closest(".trade-alert-close");
+      if (!closeBtn) return;
+      dismissTradeAlert(closeBtn.dataset.alertKey || "");
+    });
+    els.chartIntervalInput.addEventListener("change", async () => {
+      state.chartIntervalMs = Number(els.chartIntervalInput.value || 300000);
+      await loadHistoricalCandles();
+      renderMarketCharts(window.__lastPayload || {});
+    });
+    els.chartRangeInput.addEventListener("change", async () => {
+      state.chartRangeMs = Number(els.chartRangeInput.value || 259200000);
+      rebuildAllHistories();
+      renderMarketCharts(window.__lastPayload || {});
+    });
+
+    fetch("/api/state")
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((payload) => {
+        window.__lastPayload = payload;
+        renderState(payload);
+        return loadHistoricalCandles().then(() => payload);
+      })
+      .then((payload) => {
+        renderMarketCharts(payload);
+        renderOrderflowTrends(payload.orderflow_trends || []);
+        renderClusterProposals(payload.cluster_proposals || []);
+        renderLearner(payload.learner_summary || {});
+        renderCostReviews(payload.trade_reviews || [], payload.skipped_trades || []);
+        renderFeed();
+        return tick();
+      })
+      .catch((error) => {
+        setStatus("error");
+        pushFeed({
+          type: "error",
+          title: "Khong ket noi duoc backend",
+          detail: error.message || "Khong goi duoc /api/state",
+          amount: ""
+        });
+        renderFeed();
+      });
+  </script>
+</body>
+
+</html>

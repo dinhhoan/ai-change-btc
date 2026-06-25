@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local env/secrets
+.env
+.env.local
+
+# Runtime data/logs
+data/*.jsonl
+data/*.log
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+data/learner_state.json
+
+# macOS
+.DS_Store
+
