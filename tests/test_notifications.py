@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from whale_signal_lab.models import Direction, PaperOrder, PricePathPoint, Signal, TradePlan, utc_now
-from whale_signal_lab.notifications import TelegramNotifier, format_entry_message
+from whale_signal_lab.notifications import TelegramNotifier, format_entry_message, format_exit_message
 
 
 class _FakeResponse:
@@ -47,6 +47,8 @@ def _order() -> PaperOrder:
         fee=1.5,
         reason="test",
         timestamp=utc_now(),
+        leverage=10.0,
+        margin_used=200.4,
     )
 
 
@@ -56,7 +58,45 @@ class TelegramNotifierTest(unittest.TestCase):
 
         text = format_entry_message(_order(), _signal(), plan, mode="demo", tick=7, equity=10_100)
 
-        self.assertEqual(text, "BTCUSDT LONG - ENTRY[100.2] - TP[103.6] - SL[99]")
+        self.assertEqual(
+            text,
+            "BTCUSDT LONG - ENTRY[100.2] - TP[103.6] - SL[99] - VOL[$2,004] - LEV[10x] - MARGIN[$200.4]",
+        )
+
+    def test_format_exit_message_includes_pnl(self) -> None:
+        plan = TradePlan(
+            "BTCUSDT",
+            Direction.LONG,
+            100.2,
+            99.0,
+            103.6,
+            1.2,
+            3.0,
+            7,
+            leverage=10.0,
+            margin_used=200.4,
+        )
+        order = PaperOrder(
+            symbol="BTCUSDT",
+            side=Direction.SHORT,
+            quantity=20.0,
+            fill_price=103.6,
+            notional=2072.0,
+            fee=1.5,
+            reason="take_profit_rr_hit",
+            timestamp=utc_now(),
+            leverage=10.0,
+            margin_used=200.4,
+            realized_pnl=66.5,
+            closed_notional=2072.0,
+        )
+
+        text = format_exit_message(order, plan, mode="demo", tick=9, equity=10_166.5)
+
+        self.assertEqual(
+            text,
+            "BTCUSDT LONG CLOSE - EXIT[103.6] - PNL[+$66.5] - ROI[+33.18363273%] - VOL[$2,072] - LEV[10x] - REASON[TAKE_PROFIT_RR_HIT]",
+        )
 
     def test_send_text_posts_to_telegram_api(self) -> None:
         calls: list[tuple[str, dict, float]] = []

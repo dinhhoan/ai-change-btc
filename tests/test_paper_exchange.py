@@ -198,6 +198,31 @@ class PaperBrokerTest(unittest.TestCase):
         self.assertIsNotNone(scout)
         self.assertAlmostEqual(scout.notional, 500.0)
 
+    def test_target_notional_uses_futures_leverage_metadata(self) -> None:
+        broker = PaperBroker(
+            starting_cash=10_000,
+            risk_per_trade=0.2,
+            fee_bps=0,
+            slippage_bps=0,
+            min_confidence_to_trade=0.5,
+            max_abs_position_usd=10_000,
+            target_position_notional_usd=10_000,
+            target_margin_usd=1_000,
+            max_leverage=10,
+            futures_margin_mode=True,
+        )
+
+        order = broker.rebalance_from_signal(
+            _signal(Direction.LONG, expected_price=104.0, lower_band=99.0, upper_band=101.0),
+            1,
+        )
+
+        self.assertIsNotNone(order)
+        self.assertAlmostEqual(order.notional, 10_000.0)
+        self.assertAlmostEqual(order.leverage, 10.0)
+        self.assertAlmostEqual(order.margin_used, 1_000.0)
+        self.assertAlmostEqual(broker.cash, 10_000.0)
+
     def test_trailing_guard_moves_stop_after_trade_reaches_profit(self) -> None:
         broker = PaperBroker(
             starting_cash=10_000,

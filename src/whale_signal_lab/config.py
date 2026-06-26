@@ -87,6 +87,10 @@ class PaperConfig:
     min_edge_cost_multiple: float = 1.4
     min_confidence_to_trade: float = 0.58
     max_abs_position_usd: float = 1_000.0
+    target_position_notional_usd: float = 0.0
+    target_margin_usd: float = 1_000.0
+    max_leverage: float = 10.0
+    futures_margin_mode: bool = False
     risk_reward_ratio: float = 2.0
     min_forecast_rr: float = 0.72
     min_stop_loss_pct: float = 0.003
@@ -133,7 +137,7 @@ class TelegramConfig:
     api_ip_env: str = "TELEGRAM_API_IP"
     chat_id: str = ""
     notify_entries: bool = True
-    notify_exits: bool = False
+    notify_exits: bool = True
     timeout_sec: float = 5.0
 
     @property

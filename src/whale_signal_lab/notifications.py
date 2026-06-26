@@ -8,7 +8,7 @@ from typing import Callable, Protocol
 from urllib import error, request
 
 from .config import TelegramConfig
-from .models import PaperOrder, Signal, TradePlan
+from .models import Direction, PaperOrder, Signal, TradePlan
 
 
 class _Response(Protocol):
@@ -82,6 +82,19 @@ class TelegramNotifier:
             return False
         return self.send_text(format_entry_message(order, signal, plan, mode=mode, tick=tick, equity=equity))
 
+    def notify_exit(
+        self,
+        order: PaperOrder,
+        plan: TradePlan | None,
+        *,
+        mode: str,
+        tick: int,
+        equity: float,
+    ) -> bool:
+        if not self.notify_exits:
+            return False
+        return self.send_text(format_exit_message(order, plan, mode=mode, tick=tick, equity=equity))
+
     def send_text(self, text: str) -> bool:
         self.last_error = ""
         if not self.enabled:
@@ -139,11 +152,53 @@ def format_entry_message(
     entry = _money(order.fill_price)
     take_profit = _money(plan.take_profit_price) if plan else "N/A"
     stop_loss = _money(plan.stop_price) if plan else "N/A"
-    return f"{token} {side} - ENTRY[{entry}] - TP[{take_profit}] - SL[{stop_loss}]"
+    volume = _money(order.notional)
+    leverage = _leverage(order.leverage)
+    margin = _money(order.margin_used)
+    return (
+        f"{token} {side} - ENTRY[{entry}] - TP[{take_profit}] - SL[{stop_loss}] "
+        f"- VOL[${volume}] - LEV[{leverage}] - MARGIN[${margin}]"
+    )
+
+
+def format_exit_message(
+    order: PaperOrder,
+    plan: TradePlan | None,
+    *,
+    mode: str,
+    tick: int,
+    equity: float,
+) -> str:
+    token = order.symbol.upper()
+    side = plan.side.value if plan else ("SHORT" if order.side == Direction.LONG else "LONG")
+    exit_price = _money(order.fill_price)
+    pnl = _signed_money(order.realized_pnl)
+    pnl_pct = _signed_pct((order.realized_pnl / order.margin_used * 100.0) if order.margin_used else 0.0)
+    volume = _money(order.closed_notional or order.notional)
+    leverage = _leverage(order.leverage)
+    reason = order.reason.upper()
+    return (
+        f"{token} {side} CLOSE - EXIT[{exit_price}] - PNL[{pnl}] - ROI[{pnl_pct}] "
+        f"- VOL[${volume}] - LEV[{leverage}] - REASON[{reason}]"
+    )
 
 
 def _money(value: float) -> str:
     return f"{value:,.8f}".rstrip("0").rstrip(".")
+
+
+def _signed_money(value: float) -> str:
+    sign = "+" if value >= 0 else "-"
+    return f"{sign}${_money(abs(value))}"
+
+
+def _signed_pct(value: float) -> str:
+    sign = "+" if value >= 0 else "-"
+    return f"{sign}{_money(abs(value))}%"
+
+
+def _leverage(value: float) -> str:
+    return f"{_money(value)}x"
 
 
 def _number(value: float, digits: int) -> str:

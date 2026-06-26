@@ -203,6 +203,11 @@ class PaperOrder:
     slippage_cost: float = 0.0
     estimated_edge: float = 0.0
     total_execution_cost: float = 0.0
+    leverage: float = 1.0
+    margin_used: float = 0.0
+    realized_pnl: float = 0.0
+    realized_gross_pnl: float = 0.0
+    closed_notional: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -216,6 +221,10 @@ class TradePlan:
     rr_ratio: float
     created_tick: int
     partial_taken: bool = False
+    leverage: float = 1.0
+    margin_used: float = 0.0
+    entry_notional: float = 0.0
+    entry_fee_remaining: float = 0.0
 
 
 @dataclass

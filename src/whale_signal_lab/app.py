@@ -72,6 +72,10 @@ class LabRunner:
             slippage_bps=config.paper.slippage_bps,
             min_confidence_to_trade=config.paper.min_confidence_to_trade,
             max_abs_position_usd=config.paper.max_abs_position_usd,
+            target_position_notional_usd=config.paper.target_position_notional_usd,
+            target_margin_usd=config.paper.target_margin_usd,
+            max_leverage=config.paper.max_leverage,
+            futures_margin_mode=config.paper.futures_margin_mode,
             gas_fee_usd=config.paper.gas_fee_usd,
             min_edge_cost_multiple=config.paper.min_edge_cost_multiple,
             risk_reward_ratio=config.paper.risk_reward_ratio,
@@ -122,9 +126,11 @@ class LabRunner:
         orders: list[PaperOrder] = []
         for tick in market_ticks:
             self.features.add_market_tick(tick)
+            exit_plan = self.paper.trade_plans.get(tick.symbol)
             exit_order = self.paper.mark(tick.symbol, tick.price, self.tick_count)
             if exit_order:
                 orders.append(exit_order)
+                await self._notify_exit_order(exit_order, exit_plan)
         learner_outcomes = self.learner.observe_prices(self.paper.marks, self.tick_count)
         for event in whale_events:
             self.features.add_whale_transfer(event)
@@ -162,9 +168,12 @@ class LabRunner:
                     continue
                 previous_position = self.paper.positions.get(signal.symbol)
                 previous_quantity = previous_position.quantity if previous_position else 0.0
+                previous_plan = self.paper.trade_plans.get(signal.symbol)
                 order = self.paper.rebalance_from_signal(signal, self.tick_count)
                 if order:
                     orders.append(order)
+                    if order.closed_notional > 0:
+                        await self._notify_exit_order(order, previous_plan)
                     await self._notify_entry_order(order, signal, previous_quantity)
 
             scout_slots = max(0, self.config.paper.scout_max_entries_per_tick - (len(orders) - orders_before_entries))
@@ -406,6 +415,20 @@ class LabRunner:
             self.telegram.notify_entry,
             order,
             signal,
+            plan,
+            mode=self.mode,
+            tick=self.tick_count,
+            equity=self.paper.equity(),
+        )
+        if not sent and self.telegram.last_error:
+            self.data_warnings = [*self.data_warnings, self.telegram.last_error][-12:]
+
+    async def _notify_exit_order(self, order: PaperOrder, plan) -> None:
+        if order.closed_notional <= 0:
+            return
+        sent = await asyncio.to_thread(
+            self.telegram.notify_exit,
+            order,
             plan,
             mode=self.mode,
             tick=self.tick_count,

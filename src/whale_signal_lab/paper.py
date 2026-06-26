@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from .models import Direction, PaperOrder, Position, Signal, TradePlan, utc_now
 
@@ -17,6 +17,10 @@ class PaperBroker:
     min_edge_cost_multiple: float = 1.25
     risk_reward_ratio: float = 3.0
     min_stop_loss_pct: float = 0.003
+    target_position_notional_usd: float = 0.0
+    target_margin_usd: float = 1_000.0
+    max_leverage: float = 10.0
+    futures_margin_mode: bool = False
     entry_cooldown_ticks: int = 6
     min_holding_ticks: int = 4
     reversal_confidence: float = 0.62
@@ -74,6 +78,8 @@ class PaperBroker:
         return self._check_trade_plan(symbol, price, current_tick)
 
     def equity(self) -> float:
+        if self.futures_margin_mode:
+            return self.cash + self.unrealized_pnl()
         value = self.cash
         for symbol, position in self.positions.items():
             mark = self.marks.get(symbol, position.avg_price)
@@ -169,9 +175,9 @@ class PaperBroker:
                     return None
             target_notional = 0.0
             if signal.direction == Direction.LONG:
-                target_notional = min(self.equity() * self.risk_per_trade, self.max_abs_position_usd)
+                target_notional = self._base_entry_notional()
             elif signal.direction == Direction.SHORT:
-                target_notional = -min(self.equity() * self.risk_per_trade, self.max_abs_position_usd)
+                target_notional = -self._base_entry_notional()
             target_notional = self._risk_adjusted_target_notional(signal, target_notional)
             target_notional = self._loss_adjusted_target_notional(signal, target_notional)
 
@@ -205,11 +211,25 @@ class PaperBroker:
         )
         resulting_position = self.positions.get(signal.symbol, Position(signal.symbol))
         if abs(previous_quantity) < 1e-12 and abs(resulting_position.quantity) > 1e-12:
-            self.trade_plans[signal.symbol] = self._build_trade_plan(signal, order.fill_price, side, current_tick)
+            self.trade_plans[signal.symbol] = replace(
+                self._build_trade_plan(signal, order.fill_price, side, current_tick),
+                leverage=order.leverage,
+                margin_used=order.margin_used,
+                entry_notional=order.notional,
+                entry_fee_remaining=order.fee,
+            )
         elif target_notional == 0.0:
             self.trade_plans.pop(signal.symbol, None)
             self.last_exit_tick[signal.symbol] = current_tick
         return order
+
+    def _base_entry_notional(self) -> float:
+        if self.target_position_notional_usd > 0:
+            target = self.target_position_notional_usd
+        else:
+            target = self.equity() * self.risk_per_trade
+        cap = self.max_abs_position_usd if self.max_abs_position_usd > 0 else target
+        return max(0.0, min(target, cap))
 
     def _review_execution(
         self,
@@ -374,6 +394,18 @@ class PaperBroker:
             return target_notional
         scale = max(0.05, min(1.0, self.loss_streak_position_scale))
         return target_notional * scale
+
+    def _leverage_and_margin(self, notional: float) -> tuple[float, float]:
+        notional = abs(notional)
+        if notional <= 0:
+            return 1.0, 0.0
+        max_leverage = max(1.0, self.max_leverage)
+        desired_margin = self.target_margin_usd if self.target_margin_usd > 0 else notional
+        margin = min(notional, desired_margin)
+        margin = max(margin, notional / max_leverage)
+        leverage = min(max_leverage, notional / max(margin, 1e-12))
+        margin = notional / max(leverage, 1e-12)
+        return leverage, margin
 
     def _capital_guard_reason(self, current_tick: int) -> str:
         if current_tick < self.global_cooldown_until:
@@ -562,6 +594,10 @@ class PaperBroker:
             rr_ratio=plan.rr_ratio,
             created_tick=plan.created_tick,
             partial_taken=plan.partial_taken,
+            leverage=plan.leverage,
+            margin_used=plan.margin_used,
+            entry_notional=plan.entry_notional,
+            entry_fee_remaining=plan.entry_fee_remaining,
         )
 
     def _check_trade_plan(self, symbol: str, price: float, current_tick: int) -> PaperOrder | None:
@@ -618,6 +654,7 @@ class PaperBroker:
         if exit_side is None:
             return None
 
+        pre_exit_quantity = abs(position.quantity)
         order = self._fill_market(
             symbol,
             exit_side,
@@ -635,6 +672,7 @@ class PaperBroker:
             self.trade_plans.pop(symbol, None)
             self.last_exit_tick[symbol] = current_tick
         elif reason == "partial_take_profit_r_hit":
+            closed_fraction = min(1.0, exit_quantity / max(pre_exit_quantity, 1e-12))
             self.trade_plans[symbol] = TradePlan(
                 symbol=plan.symbol,
                 side=plan.side,
@@ -645,6 +683,10 @@ class PaperBroker:
                 rr_ratio=plan.rr_ratio,
                 created_tick=plan.created_tick,
                 partial_taken=True,
+                leverage=plan.leverage,
+                margin_used=max(0.0, plan.margin_used * (1.0 - closed_fraction)),
+                entry_notional=max(0.0, plan.entry_notional * (1.0 - closed_fraction)),
+                entry_fee_remaining=max(0.0, plan.entry_fee_remaining * (1.0 - closed_fraction)),
             )
         return order
 
@@ -666,18 +708,32 @@ class PaperBroker:
         fill_price = price * (1.0 + slippage if side == Direction.LONG else 1.0 - slippage)
         notional = abs(quantity * fill_price)
         fee = notional * self.fee_bps / 10_000.0
-
-        if side == Direction.LONG:
-            self.cash -= notional + fee + gas_fee
-        else:
-            self.cash += notional - fee - gas_fee
-
         position = self.positions.setdefault(symbol, Position(symbol))
+        previous_quantity = position.quantity
         realized_gross = self._realized_gross_pnl(position, signed_quantity, fill_price)
         closed_quantity = min(abs(position.quantity), abs(signed_quantity)) if position.quantity * signed_quantity < 0 else 0.0
         closed_fee = fee * (closed_quantity / quantity) if quantity > 0 and closed_quantity > 0 else 0.0
         closed_gas = gas_fee if closed_quantity > 0 else 0.0
-        realized_net = realized_gross - closed_fee - closed_gas
+        active_plan = self.trade_plans.get(symbol)
+        closed_fraction = min(1.0, closed_quantity / max(abs(previous_quantity), 1e-12)) if closed_quantity > 0 else 0.0
+        entry_fee_allocated = (active_plan.entry_fee_remaining * closed_fraction) if active_plan else 0.0
+        realized_net = realized_gross - closed_fee - closed_gas - entry_fee_allocated
+        if closed_quantity > 0 and active_plan:
+            leverage = active_plan.leverage
+            margin_used = active_plan.margin_used * closed_fraction
+        else:
+            leverage, margin_used = self._leverage_and_margin(notional)
+
+        if self.futures_margin_mode:
+            if closed_quantity > 0:
+                self.cash += realized_gross - closed_fee - closed_gas
+            else:
+                self.cash -= fee + gas_fee
+        elif side == Direction.LONG:
+            self.cash -= notional + fee + gas_fee
+        else:
+            self.cash += notional - fee - gas_fee
+
         self.total_fees += fee + gas_fee
         self.total_gas_fees += gas_fee
         if closed_quantity > 0:
@@ -710,6 +766,11 @@ class PaperBroker:
             slippage_cost=round(slippage_cost, 8),
             estimated_edge=round(estimated_edge, 8),
             total_execution_cost=round(total_execution_cost, 8),
+            leverage=round(leverage, 4),
+            margin_used=round(margin_used, 8),
+            realized_pnl=round(realized_net, 8),
+            realized_gross_pnl=round(realized_gross, 8),
+            closed_notional=round(abs(closed_quantity * fill_price), 8),
         )
         self.orders.append(order)
         return order
