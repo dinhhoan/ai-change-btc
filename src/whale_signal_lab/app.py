@@ -283,7 +283,7 @@ class LabRunner:
                 continue
             if side == Direction.SHORT and float(trend.get("rsi", 50.0) or 50.0) <= 28.0:
                 continue
-            if not self._scout_ai_allows(base_signal, side):
+            if not self._orderflow_scout_ai_allows(base_signal, side, readiness):
                 continue
             scout = self._build_scout_signal(
                 base_signal,
@@ -316,6 +316,25 @@ class LabRunner:
         if side_score < 0.03 and signal.confidence < self.config.paper.scout_min_confidence_to_trade + 0.03:
             return False
         return signal.confidence >= self.config.paper.scout_min_confidence_to_trade
+
+    def _orderflow_scout_ai_allows(self, signal: Signal, side: Direction, readiness: float) -> bool:
+        if signal.direction != Direction.FLAT:
+            return False
+        if signal.components.get("gate_passed", 0.0):
+            return False
+        if float(signal.components.get("ml_gate_passed", 1.0) or 0.0) == 0.0:
+            return False
+        if float(signal.components.get("shock_risk", 0.0) or 0.0) >= 1.0:
+            return False
+        side_value = 1.0 if side == Direction.LONG else -1.0
+        side_score = side_value * signal.score
+        setup_readiness = float(signal.components.get("setup_readiness", 0.0) or 0.0)
+        if side_score < -0.08:
+            return False
+        if setup_readiness < 0.25 and readiness < 0.70:
+            return False
+        min_confidence = max(0.50, self.config.paper.scout_min_confidence_to_trade - 0.02)
+        return signal.confidence >= min_confidence
 
     def _build_scout_signal(
         self,

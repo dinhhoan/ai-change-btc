@@ -115,10 +115,10 @@ class PaperConfig:
     min_session_trades_for_guard: int = 3
     global_cooldown_ticks: int = 48
     scout_enabled: bool = True
-    scout_position_scale: float = 0.20
-    scout_min_confidence_to_trade: float = 0.56
-    scout_min_readiness: float = 0.78
-    scout_min_priority: float = 0.64
+    scout_position_scale: float = 0.12
+    scout_min_confidence_to_trade: float = 0.52
+    scout_min_readiness: float = 0.60
+    scout_min_priority: float = 0.60
     scout_min_confirmations: int = 3
     scout_max_blockers: int = 2
     scout_max_entries_per_tick: int = 1
