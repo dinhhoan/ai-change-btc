@@ -16,7 +16,22 @@ class WalletConfig:
 @dataclass(frozen=True)
 class AppConfig:
     mode: str = "demo"
-    symbols: tuple[str, ...] = ("BTCUSDT", "ETHUSDT")
+    symbols: tuple[str, ...] = (
+        "BTCUSDT",
+        "ETHUSDT",
+        "SOLUSDT",
+        "BNBUSDT",
+        "XRPUSDT",
+        "DOGEUSDT",
+        "ADAUSDT",
+        "SUIUSDT",
+        "LINKUSDT",
+        "AVAXUSDT",
+        "BCHUSDT",
+        "LTCUSDT",
+        "TRXUSDT",
+        "DOTUSDT",
+    )
     poll_interval_sec: float = 5.0
     signal_horizon_sec: int = 900
     print_json: bool = False
@@ -116,8 +131,8 @@ class PaperConfig:
     max_session_drawdown_pct: float = 0.003
     max_session_losses: int = 3
     min_session_win_rate: float = 0.40
-    min_session_trades_for_guard: int = 3
-    global_cooldown_ticks: int = 48
+    min_session_trades_for_guard: int = 5
+    global_cooldown_ticks: int = 24
     scout_enabled: bool = True
     scout_position_scale: float = 0.12
     scout_min_confidence_to_trade: float = 0.52

@@ -44,8 +44,8 @@ class PaperBroker:
     max_session_drawdown_pct: float = 0.0015
     max_session_losses: int = 2
     min_session_win_rate: float = 0.40
-    min_session_trades_for_guard: int = 2
-    global_cooldown_ticks: int = 96
+    min_session_trades_for_guard: int = 5
+    global_cooldown_ticks: int = 24
     scout_position_scale: float = 0.25
     scout_min_confidence_to_trade: float = 0.50
     cash: float = field(init=False)
@@ -408,7 +408,11 @@ class PaperBroker:
         return leverage, margin
 
     def _capital_guard_reason(self, current_tick: int) -> str:
+        net_pnl_pct = (self.equity() - self.starting_cash) / self.starting_cash if self.starting_cash else 0.0
         if current_tick < self.global_cooldown_until:
+            if net_pnl_pct >= 0:
+                self.global_cooldown_until = 0
+                return ""
             return "capital_guard_cooldown_active"
 
         closed_trades = self.winning_trades + self.losing_trades + self.scratch_trades
@@ -417,11 +421,11 @@ class PaperBroker:
 
         decisive_trades = self.winning_trades + self.losing_trades
         win_rate = self.winning_trades / decisive_trades if decisive_trades else 0.0
-        net_pnl_pct = (self.equity() - self.starting_cash) / self.starting_cash if self.starting_cash else 0.0
         drawdown_limit = -abs(self.max_session_drawdown_pct)
         drawdown_breached = net_pnl_pct <= drawdown_limit
         loss_limit_breached = (
-            self.losing_trades >= max(1, self.max_session_losses)
+            net_pnl_pct < 0
+            and self.losing_trades >= max(1, self.max_session_losses)
             and win_rate < max(0.0, self.min_session_win_rate)
         )
         if not (drawdown_breached or loss_limit_breached):

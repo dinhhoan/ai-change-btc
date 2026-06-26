@@ -365,6 +365,40 @@ class PaperBrokerTest(unittest.TestCase):
         self.assertEqual(broker.skipped_trades[-1]["reason"], "capital_guard_triggered")
         self.assertEqual(broker.performance_summary()["global_cooldown_until"], 15)
 
+    def test_capital_guard_does_not_lock_profitable_session(self) -> None:
+        broker = PaperBroker(
+            starting_cash=10_000,
+            risk_per_trade=0.2,
+            fee_bps=0,
+            slippage_bps=0,
+            min_confidence_to_trade=0.5,
+            max_abs_position_usd=5_000,
+            max_session_losses=1,
+            min_session_trades_for_guard=1,
+            global_cooldown_ticks=10,
+        )
+        broker.cash = 10_025
+        broker.winning_trades = 1
+        broker.losing_trades = 3
+
+        self.assertEqual(broker._capital_guard_reason(5), "")
+        self.assertEqual(broker.global_cooldown_until, 0)
+
+    def test_capital_guard_unlocks_when_pnl_recovers(self) -> None:
+        broker = PaperBroker(
+            starting_cash=10_000,
+            risk_per_trade=0.2,
+            fee_bps=0,
+            slippage_bps=0,
+            min_confidence_to_trade=0.5,
+            max_abs_position_usd=5_000,
+        )
+        broker.cash = 10_001
+        broker.global_cooldown_until = 20
+
+        self.assertEqual(broker._capital_guard_reason(10), "")
+        self.assertEqual(broker.global_cooldown_until, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

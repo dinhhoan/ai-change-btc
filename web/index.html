@@ -192,6 +192,18 @@
       font-size: 13px;
     }
 
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .metrics {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1585,13 +1597,7 @@
     </aside>
 
     <main>
-      <div class="topbar">
-        <div>
-          <h3>Supper AI by Hoan Tran</h2>
-            <div class="subtle">Dòng tiền cá mập, áp lực thị trường, lời/lỗ paper</div>
-        </div>
-        <div class="subtle" id="updatedLabel">Đang chờ</div>
-      </div>
+      <div class="visually-hidden" id="updatedLabel">Đang chờ</div>
 
       <section class="metrics" aria-label="Chỉ số phiên chạy">
         <div class="metric">

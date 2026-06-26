@@ -1,6 +1,6 @@
 [app]
 mode = "demo"
-symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT"]
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT", "ADAUSDT", "SUIUSDT", "LINKUSDT", "AVAXUSDT", "BCHUSDT", "LTCUSDT", "TRXUSDT", "DOTUSDT"]
 poll_interval_sec = 10
 signal_horizon_sec = 900
 print_json = false
@@ -83,8 +83,8 @@ loss_streak_position_scale = 0.35
 max_session_drawdown_pct = 0.003
 max_session_losses = 3
 min_session_win_rate = 0.40
-min_session_trades_for_guard = 3
-global_cooldown_ticks = 48
+min_session_trades_for_guard = 5
+global_cooldown_ticks = 24
 scout_enabled = true
 scout_position_scale = 1.0
 scout_min_confidence_to_trade = 0.52
