@@ -103,7 +103,7 @@ class PaperConfig:
     shock_position_scale: float = 0.35
     partial_take_profit_r: float = 0.55
     partial_take_profit_fraction: float = 0.50
-    time_stop_ticks: int = 8
+    time_stop_ticks: int = 18
     time_stop_min_r: float = 0.10
     min_decisive_trade_pnl: float = 1.0
     loss_streak_limit: int = 2
@@ -117,7 +117,7 @@ class PaperConfig:
     scout_enabled: bool = True
     scout_position_scale: float = 0.12
     scout_min_confidence_to_trade: float = 0.52
-    scout_min_readiness: float = 0.60
+    scout_min_readiness: float = 0.55
     scout_min_priority: float = 0.60
     scout_min_confirmations: int = 3
     scout_max_blockers: int = 2
